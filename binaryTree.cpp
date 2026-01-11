@@ -11,12 +11,70 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
 
 class binaryTree {
 public:
+
+    // 865. Smallest Subtree with all the Deepest Nodes
+    // return the TreeNode of the smallest subtree which contains all the deepest nodes
+    /*
+     * e.g.
+     * 1
+     * |\
+     * 3 4
+     * | |\
+     * 2 6 5
+     *   |  \
+     *   8   7
+     *
+     * -> 4
+     *
+     *
+     */
+
+    TreeNode* subtreeWithAllDeepest(TreeNode* root) {
+        queue<TreeNode *> q;
+        int curSize = 1, nextSize = 0;
+        q.push(root);
+        vector<TreeNode *> snapShot;
+        unordered_map<TreeNode *, TreeNode *> mp;
+        while (!q.empty()) {
+            for (int i = 0; i < curSize; i++) {
+                TreeNode* tn = q.front();
+                snapShot.push_back(tn);
+                q.pop();
+                if (tn->left) {
+                    mp[tn->left] = tn;
+                    q.push(tn->left);
+                    nextSize++;
+                }
+                if (tn->right) {
+                    mp[tn->right] = tn;
+                    q.push(tn->right);
+                    nextSize++;
+                }
+            }
+            if (nextSize == 0) {
+                break;
+            }
+            curSize = nextSize;
+            nextSize = 0;
+            snapShot.clear();
+        }
+        unordered_set<TreeNode *> st(snapShot.begin(), snapShot.end()); // initialize set from vector
+        while (st.size() > 1) {
+            unordered_set<TreeNode *> next;
+            for (auto& u : st) {  // & means it's a reference, not a copy
+                next.insert(mp[u]);
+            }
+            st = next;
+        }
+        return *st.begin(); // return
+    }
 
     /*
      * 236. Lowest Common Ancestor of a Binary Tree

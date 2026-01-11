@@ -24,41 +24,77 @@ public:
     // A subsequence is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.
     // nums = [1,2,3,4,5,6,7,8]
     // -> [1,3,4], [2,3,7], [5,6,7], [7,8]
+    //
+    // A subset is a set which is subset of the original one (order doesn't matter)
+    // nums = [1,2,3,4,5,6,7,8]
+    // -> [], [3], [6,2], [5,7,2,3,1]
 
+
+    // 1695. Maximum Erasure Value
+    // return the maximum sum of a subarray in which each element is unique
+    // sliding window
+    // nums = [4,2,4,5,6]
+    // -> 17, [4,5,6]
+    // nums = [5,2,1,2,5,2,1,2,5]
+    // -> 8, [5,2,1] or [1,2,5]
+    int maximumUniqueSubarray(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        int n = nums.size(), cur = 0, sum = 0, res = 0, left = 0, right = 0;
+        while (right < n) {
+            // initialize
+            cur = nums[right];
+            mp[cur]++;
+            // while illegal
+            while (mp[cur] > 1 && left <= right) {
+                mp[nums[left]]--;
+                sum -= nums[left];
+                left++;
+            }
+            // legal state
+            sum += cur;
+            res = max(res, sum);
+            right++;
+        }
+        return res;
+    }
 
     // 2537. Count the Number of Good Subarrays
     // A subarray is good if there are at least k pairs of indices (i, j) such that i < j and arr[i] == arr[j]
     // sliding window
     //
-    // nums = [3,1,4,3,2,2,4], k = 2
+    // nums = [3,1,4,3,2,2,5,4], k = 2
     // -> 4
     // - [3,1,4,3,2,2] that has 2 pairs.
     // - [3,1,4,3,2,2,4] that has 3 pairs.
     // - [1,4,3,2,2,4] that has 2 pairs.
     // - [4,3,2,2,4] that has 2 pairs.
     //
-    // problem of pairs
+    // Problem of pairs
     // [3] 0
     // [3,3] 0+1 pairs
     // [3,3,3] 0+1+2 pairs
     // [3,3,3,3] 0+1+2+3 pairs
     long long countGood(vector<int>& nums, int k) {
         unordered_map<int, int> mp; // mp[u] is the number of times u appears in the window
-        long long ans = 0;
+        long long res = 0;
         int n = nums.size();
-        int left = 0, cnt = 0;
-        for (int right = 0; right < n; right++) {
+        int left = 0, right = 0, cnt = 0;
+        while (right < n) {
             cnt += mp[nums[right]];
             mp[nums[right]]++;
+            // while legal
             while (cnt >= k) {
                 mp[nums[left]]--;
                 cnt -= mp[nums[left]];
                 left++;
             }
-            // at this time, [left, i] isn't qualified
-            ans += left;
+            // reached the first illegal state, but from this illegal state we can find out something
+            // at this time, [left, right] isn't qualified,
+            // but [0, right], [1, right], ... [left - 1, right] are all qualified
+            res += left;
+            right++;
         }
-        return ans;
+        return res;
     }
 
     // 2302. Count Subarrays With Score Less Than K
@@ -83,7 +119,7 @@ public:
                 sum -= nums[left];
                 left++; // left move forward
             }
-            // now it's all legal
+            // reach legal state
             // all subarray that ends with right are good ones
             // [left, right], [left + 1, right], ... , [right - 1, right], [right, right]
             ans += right - left + 1;
@@ -112,12 +148,14 @@ public:
             if (nums[right] == mx) {
                 mxNum++;
             }
+            // legal state
             while (mxNum == k) {
                 // ans += n - right;
                 if (nums[left++] == mx) {
                     mxNum--;
                 }
             }
+            // just reached illegal state
             ans += left;
         }
         return ans;
@@ -149,13 +187,13 @@ public:
         return ans;
     }
 
-    // 2251. Put Marbles in Bags
-    // Split weights into bags, calculate the max costs difference between bags
+    // 2551. Put Marbles in Bags
+    // Split weights into k bags, calculate the max costs difference between bags
     // the cost of a bag is sum of the first marble plus sum of the last marble
     // weights = [1,3,5,1], k = 2
     // -> 4
-    // min [1] [3,5,1] -> costs 1 + 1 + (3 + 1) = 6
-    // max [1,3] [5,1] -> costs 1 + 3 + 5 + 1 = 10
+    // min [1] [3,5,1] -> costs (1 + 1) + (3 + 1) = 6
+    // max [1,3] [5,1] -> costs (1 + 3) + (5 + 1) = 10
     // max - min = 4
     long long putMarbles(vector<int>& weights, int k) {
         if (k == 1) return 0;

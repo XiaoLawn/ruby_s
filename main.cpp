@@ -30,9 +30,11 @@ int main() {
     learning.vecTest();
     learning.mapTest();
     learning.setTest();
-    learning.stringTest();
+    // learning.stringTest();
     learning.maxTest();
     learning.charTest();
+    learning.mathsTest();
+    learning.traverseTest();
 
     Solution solution;
 
@@ -74,7 +76,7 @@ int main() {
 
     vector<string> start = {"ant", "act", "tack"};
     vector<string> target = {"tack", "act", "acti"};
-    vector<int> vec = {2,1,3,4};
+    vector<int> vec = {0, -3};
     vector<int> vec1 = {1,3,3,2};
     string s = "mokkori";
 
@@ -93,6 +95,7 @@ int main() {
     // solution.removeInvalidParentheses("(a)())()");
     // solution.convert("PAYPALISHIRING", 4);
     // solution.countSubarrays(vec, 5);
-    int t = solution.maxExpectedEarnings(3, vec, vec1);
+    // int t = solution.maximumGain("cdbcbbaaabab", 4, 5);
+    solution.findSmallestInteger(vec, 4);
     return 0;
 }

@@ -15,6 +15,79 @@ using namespace std;
 class Simulate {
 public:
 
+    // 1717. Maximum Score From Removing Substrings
+    // for each round, each ab gains x points, and ba gains y points, return the maximum points
+    // s = "cdbcbbaaabab", x = 4, y = 5
+    // cdbcbbaaa(ba)b +5 -> cdbcb(ba)aab +5 -> cdbc(ba)ab +5 -> cdbc(ab) +4 -> cdbc
+    // -> 19
+    //
+    // s = "aabbaaxybbaabb", x = 5, y = 4
+    // a(ab)baaxybba(ab)b +10 -> (ab)aaxybb(ab) +10 -> aaxybb
+    // -> 20
+    int maximumGain(string s, int x, int y) {
+        // c1c2 is always higher than c2c1, which is x points
+        char c1 = 'a', c2 = 'b';
+        if (x < y) {
+            swap(x, y);
+            swap(c1, c2);
+        }
+        int res = 0, cnt1 = 0, cnt2 = 0;
+        for (char c : s) {
+            if (c == c1) {
+                cnt1 += 1;
+            } else if (c == c2) {
+                if (cnt1 > 0) {  // c1c2 pairs immediately
+                    cnt1--;
+                    res += x;
+                } else {
+                    cnt2++;
+                }
+            } else {  // reach another sector
+                res += y * min(cnt1, cnt2); // for all c2c1 pairs
+                cnt1 = 0;
+                cnt2 = 0;
+            }
+        }
+        res += y * min(cnt1, cnt2);
+        return res;
+    }
+
+    // 1493. Longest Subarray of 1's After Deleting One Element
+    // given an array of 0 and 1, calculate forward for 1 num in the left of 0, backward for the right of 0
+    // nums = [1,1,0,1]
+    // -> 3
+    // nums = [0,1,1,1,0,1,1,0,1]
+    // -> 5
+    // nums = [1,1,1]
+    // -> 2
+    int longestSubarray(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> vec(n, 0);
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == 1) {
+                cnt++;
+            } else {
+                vec[i] = cnt;
+                cnt = 0;
+            }
+        }
+        if (cnt == n) {
+            return n - 1;
+        }
+        cnt = 0;
+        int res = 0;
+        for (int j = n - 1; j >= 0; j--) {
+            if (nums[j] == 1) {
+                cnt++;
+            } else {
+                res = max(vec[j] + cnt, res);
+                cnt = 0;
+            }
+        }
+        return res;
+    }
+
     // 781. Rabbits in Forest
     // Given answers of rabbits saying how many other rabbits that have the same color as it
     // e.g.

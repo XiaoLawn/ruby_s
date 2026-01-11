@@ -12,8 +12,119 @@ using namespace std;
 class DP {
 public:
     /**
-     * The things that have happened won't change, but will impose effect on the future
+     * The things that have happened won't change, but will impose effects on the future.
+     * The future will not affect the things that have happened.
      */
+
+    // 120. Triangle
+    // Given a triangle array, return the minimum path sum from top to bottom.
+    // dp backwards
+    // e.g.
+    // triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+    // -> 11 (2,3,5,1)
+    // 2
+    // 3 4
+    // 6 5 7
+    // 4 1 8 3
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int n = triangle.size();
+        vector<int> dp(n, 0x3f3f3f3f); // dp[i] means the minimum sum if picked ith item
+        dp[0] = triangle[0][0];
+        // consider i level (starts with 0)
+        // i level total i+1 items
+        for (int i = 1; i < n; i++) {
+            // consider jth item
+            // have to start from the end to the front, because jth item depends on j-1 th item from the previous level
+            for (int j = i; j >= 0; j--) {
+                // j
+                int mn = dp[j] + triangle[i][j];
+                // j - 1
+                if (j > 0) {
+                    mn = min(mn, dp[j - 1] + triangle[i][j]);
+                }
+                dp[j] = mn;
+            }
+        }
+        int res = dp[0];
+        for (int i = 0; i < dp.size(); i++) {
+            res = min(dp[i], res);
+        }
+        return res;
+    }
+
+    // 1277. Count Square Submatrices with All Ones
+    // e.g.
+    // matrix =
+    // [
+    //   [0,1,1,1],
+    //   [1,1,1,1],
+    //   [0,1,1,1]
+    // ]
+    // -> 15, 10 1x1, 4 2x2, 1 3x3
+    //
+    // matrix =
+    // [
+    //   [1,0,1],
+    //   [1,1,0],
+    //   [1,1,0]
+    // ]
+    // -> 7, 6 1x1, 1 2x2
+    int countSquares(vector<vector<int>>& dp) {
+        int n = dp.size();
+        int m = dp[0].size();
+        int res = 0;
+        for(int i = 0;i<n;i++) {
+            for(int j = 0;j<m;j++) {
+                if(i == 0 || j == 0) {
+                    res += dp[i][j];
+                    continue;
+                }
+                if(dp[i][j] == 0) {
+                    continue;
+                }
+                int mn = min(dp[i - 1][j], dp[i][j - 1]);
+                mn = min(mn, dp[i - 1][j - 1]);
+                dp[i][j] = mn + 1;
+                res += dp[i][j];
+            }
+        }
+        return res;
+    }
+
+    // 837. New 21 Game
+    // start with n point, each time get a score between [1, maxPts], return the probability of getting res between [k, n]
+    // e.g.
+    // [k = 17, n = 21], maxPts = 10
+    // -> 0.73278
+    // [k = 1, n = 10], maxPts = 10
+    // -> 1.00000
+    // [k = 1, n = 6], maxPts = 10
+    // -> 0.60000
+    double new21Game(int n, int k, int maxPts) {
+        if (k == 0 || n >= k - 1 + maxPts) return 1.0;
+        vector<double> dp(n + 1, 0); // dp[i] is the possibility of getting number i
+        dp[0] = 1;
+        double sum = 0;
+        double res = 0;
+        for (int i = 1; i <= n; i++) {
+            if (i <= k) {
+                sum += dp[i - 1];
+            }
+            if (i - maxPts - 1 >= 0) {
+                sum -= dp[i - maxPts - 1];
+                // when not sure, use example
+                // maxPts = 3, i = 5
+                // [2,3,4] should be there, cut 1
+            }
+            double d = sum / maxPts;
+            if (i >= k) {
+                res += d;
+            } else {
+                dp[i] = d;
+            }
+        }
+        return res;
+    }
 
     // 198. House Robber
     int rob(vector<int> &nums) {
@@ -133,5 +244,4 @@ public:
         }
         return ans;
     }
-
 };

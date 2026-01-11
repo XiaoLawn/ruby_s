@@ -19,100 +19,11 @@ public:
     // template
     // namespace
 
-    void stringTest() {
-        // char has no initial value
-        char c; // \0
-        char ca;
-        char cb;
-
-        string s = "abc";
-        string s1 = "hello";
-        s1[1] = 'a'; // editable
-        string s2 = "hello world";
-        // string initial value is ""
-        string s3; // ""
-
-        string u = string(3, 'h'); // u = "hhh"
-        cout << u << endl;
-
-        // concatenation of string
-        char c1 = 'a'; // 'a'
-        char c2 = 'a' + 2; // 'c'
-        s += s1 + s2;
-        s3 += c1;
-        s3 += c2;
-
-        // s1 - s2
-        int cmp = s1.compare(s2);
-
-        // swap two strings
-        s1.swap(s2);
-
-        // find
-        // s = "abchallohello world"
-        int n = s.find("hel", 8); // find the first occasion of "hel" from position 8
-        int n1 = s.rfind("hel"); // from back to rear, find the first occasion of "hel"
-
-        int n2 = s.find("lef"); // -1 means not found
-
-        string vowelList = "aeiouAEIOU";
-        if (vowelList.find('d') != -1) {
-            // not found
-        }
-
-
-        // Take a substring
-        // From index 1 and takes a substring of length 2
-        string sub = s.substr(1, 2);
-        // Take a substring [m1, m2)
-        int m1 = 3;
-        int m2 = 6;
-        string subm = s.substr(m1, m2 - m1);
-
-        // erase
-        // From index 1 and erase a substring of length 3
-        s1.erase(1, 3); // 删除 从下标1开始，长度为3的子串
-
-        // reverse
-        reverse(s.begin(), s.end());
-
-        // startWith
-        if (s1.find(s2) == 0) {
-        }
-
-        // endWith
-        if (s1.find(s2, s1.size() - s2.size()) != -1) {
-        }
-
-        // stoi() -> string to int
-        string l = "120";
-        int i = stoi(l);
-
-        // to_string() -> int to string
-        string t = to_string(i);
-    }
-
-
-    // update and maintain the order of vec
-    // using binary search
-    void update(vector<int>& items, int& item) {
-        auto l = items.begin();
-        auto r = items.end();
-        while (l < r) {
-            auto mid = l + (r - l >> 1);
-            if (*mid > item) {
-                r = mid;
-            } else {
-                l = mid + 1;
-            }
-        }
-        items.insert(l, 1, item);
-    }
 
     /*
-     * vector -> push_back(), there's no find() for vector only std::find()
-     * set -> insert(), erase(), find()
-     * map -> insert(pair<int, string>()), find()
+     * vector -> push_back(), pop_back(), resize(), clear(),
+     * set -> insert(), erase(), if(st.count(1)), if(st.find(1) == st.end())
+     * map -> insert(pair<int, string>()), if(mp.count(1)), if(mp.find(1) == mp.end())
      * stack -> push(), pop(), top(), empty()
      * queue -> push(), pop(), front(), back(), empty()
      */
@@ -122,7 +33,8 @@ public:
         vector<int> vec1(3); // {0, 0, 0}
         vector<int> vec2(3, 2); // {2, 2, 2}
         vector<int> vec3{3, 4, 5, 6};
-        vector<int> vec4(vec1.begin(), vec1.end()); // same as vec1
+        vector<int> vec4 = {3, 4, 5, 6};
+        vector<int> vec5(vec1.begin(), vec1.end()); // same as vec1
 
         // use set to initialize vector
         set<int> st;
@@ -130,7 +42,7 @@ public:
         st.insert(4);
         st.insert(5);
         st.insert(6);
-        vector<int> vec5(st.begin(), st.end()); // {4, 5, 6}
+        vector<int> vec6(st.begin(), st.end()); // {4, 5, 6}
 
 
         init.resize(10); // init 里面 10 个 0
@@ -175,6 +87,7 @@ public:
         int t1 = num[100]; // t1 = 250
         int t2 = num.size(); // t2 = 11 (5 + 6)
 
+        // vec sort
         // sort ascending
         sort(num.begin(), num.end());
 
@@ -201,6 +114,9 @@ public:
         vector<int> vec = {0, 1, 2, 3, 4, 5, 6, 7};
         vector<int> subVec(vec.begin() + 2, vec.begin() + 5);
 
+        // vec clear 清空vec
+        vec.clear();
+
         // Two-dimensional vector
         vector<vector<int>> grid(2, vector<int>(10)); // initialize
         vector<vector<int>> graph;
@@ -218,11 +134,27 @@ public:
         }
     }
 
+    // update and maintain the order of vec
+    // using binary search
+    void update(vector<int>& items, int& item) {
+        auto l = items.begin();
+        auto r = items.end();
+        while (l < r) {
+            auto mid = l + (r - l >> 1);
+            if (*mid > item) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        items.insert(l, 1, item);
+    }
+
     void mapTest() {
         map<int, string> mp; // map ordered by Key ascending
         unordered_map<int, string> unmp; // unordered map
 
-        // insert
+        // map insert
         mp[1] = "1";
         mp[2] = "2";
         mp[3] = "3";
@@ -230,6 +162,8 @@ public:
         mp.insert(pair<int, string>(5, "5")); // map is formed by pair<>
         mp[8] = "8";
         mp.erase(8);
+
+        // map size
         int mpSize = mp.size();
 
         string s1 = mp[123];
@@ -258,6 +192,9 @@ public:
             cout << "删除了" << endl;
         }
 
+        // map clear 清空 map
+        mp.clear();
+
         // map contain key
         if (mp.find(1) == mp.end()) {
             cout << "not contain that element" << endl;
@@ -270,15 +207,16 @@ public:
             cout << "not contain that element" << endl;
         }
 
-        // map traversal
-        for (map<int, string>::iterator it = mp.begin(); it != mp.end(); it++) {
-            cout << it->second << endl;
-        }
-
-        // map traversal 2
+        // map traverse
         for (auto& [k, v] : mp) {
             cout << k << endl;
             cout << v << endl;
+        }
+
+        // map traverse
+        map<int, string>::iterator it;
+        for (it = mp.begin(); it != mp.end(); it++) {
+            cout << it->second << endl;
         }
 
         // Determine whether it is empty
@@ -300,28 +238,46 @@ public:
 
     void setTest() {
         int arr[5] = {0, 1, 2, 3, 4};
-        set<int> iSet(arr, arr + 5); // 由数组初始化 set
+        set<int> st(arr, arr + 5); // 由数组初始化 set
         set<int> emptySet; // 定义空 set
 
+        // range initialization using iterators
         vector<int> nums = {1, 2, 3, 4, 5};
-        set<int> st(nums.begin(), nums.end()); // initialize by vector
+        vector<int> nums1(nums.begin(), nums.end());
+        set<int> st1(nums.begin(), nums.end());
+        set<int> st2(st1.begin(), st1.end());
 
-        // 添加元素
-        iSet.insert(3);
-        iSet.insert(3);
-        iSet.insert(5);
-        // emplace 比 insert 快
-        iSet.emplace(8);
-        iSet.emplace(9);
+        // insert
+        st.insert(3);
+        st.insert(3);
+        st.insert(5);
+        // emplace is faster than insert
+        st.emplace(8);
+        st.emplace(9);
 
-        cout << "size:" << iSet.size() << endl;
-        cout << "3 count = " << iSet.count(3) << endl; // set.count(x) 只能返回0或1；可用来判断元素是否存在过
+        cout << "size:" << st.size() << endl;
+        cout << "3 count = " << st.count(3) << endl; // set.count(x) 只能返回0或1；可用来判断元素是否存在过
 
-        iSet.erase(1); // 删除元素
+        st.erase(1); // 删除元素
+
+        // set contains
+        if (st.count(2)) {
+            // st.count() only returns 0 or 1, 1 means found, 0 means no
+            // contains
+        }
+
+        // another
+        if (st.find(2) == st.end()) {
+        }
+
+        // set traverse
+        for (int u : st) {
+            cout << u << endl;
+        }
 
         // set traverse 1
-        set<int>::iterator it1 = iSet.begin();
-        set<int>::iterator it2 = iSet.end();
+        set<int>::iterator it1 = st.begin();
+        set<int>::iterator it2 = st.end();
         for (; it1 != it2; it1++) {
             // 遍历；所有元素都会根据元素的键值自动排序
             cout << *it1;
@@ -329,26 +285,15 @@ public:
         cout << endl;
 
         // set traverse 2
-        for (auto& u : iSet) {
+        for (auto& u : st) {
             // ...
             cout << u << endl;
         }
 
-        // set find
-        int n1 = iSet.count(3); // set.count(x) 只能返回0或1；可用来判断元素是否存在过
-        if (n1 == 0) {
-            cout << "3 not found" << endl;
-        }
-        it1 = iSet.find(3);
-        if (it1 != iSet.end()) // set 中是否存在元素
-            cout << "3 found" << endl;
+        auto it = lower_bound(st.begin(), st.end(), 4); // ???
 
-        it1 = iSet.find(1);
-        if (it1 != iSet.end())
-            cout << "1 not found" << endl;
-
-        auto it = lower_bound(iSet.begin(), iSet.end(), 4); // ???
-        iSet.clear();
+        // set clear
+        st.clear();
     }
 
     void stackTest() {
@@ -362,12 +307,22 @@ public:
     }
 
     /*
+     * queue
      * .push()
      * .top()  return the first element
      * .pop()  return void
      * .empty()
      * .back()
      * .front()
+     *
+     * deque
+     * .push_front()
+     * .push_back()
+     * .pop_front()
+     * .pop_back()
+     * .front()
+     * .back()
+     * .insert()
      */
     void queueTest() {
         queue<string> queue; // 定义queue
@@ -378,6 +333,35 @@ public:
             string back = queue.back();
             queue.pop();
         }
+
+        deque<int> dq;
+
+        // insert back
+        dq.push_back(10); // [10]
+        dq.push_back(20); // [10, 20]
+
+        // insert front
+        dq.push_front(5); // [5, 10, 20]
+
+        if (dq.empty()) {
+            cout << "empty" << endl;
+        }
+
+        // front(), back()
+        cout << "Front: " << dq.front() << endl; // 5
+        cout << "Back: " << dq.back() << endl; // 20
+        cout << "Index 1: " << dq[1] << endl; // 10
+
+        // pop_front(), pop_back()
+        dq.pop_front(); // removes 5 → [10, 20]
+        dq.pop_back(); // removes 20 → [10]
+
+        // traverse deque
+        cout << "Contents: ";
+        for (int x : dq) {
+            cout << x << " ";
+        }
+        cout << endl;
     }
 
     void priorityQueueTest() {
@@ -446,7 +430,7 @@ public:
     void charTest() {
         char c = '1';
         if (isdigit(c)) {
-            printf("is digit");  // is digit
+            printf("is digit"); // is digit
         }
         if (isalpha(c)) {
             printf("is alpha");
@@ -457,13 +441,54 @@ public:
             printf("is digit");
         }
         if (isalpha(c1)) {
-            printf("is alpha");  // is alpha
+            printf("is alpha"); // is alpha
         }
         if (isupper(c1)) {
             printf("is upper");
         }
         if (islower(c1)) {
             printf("is lower");
+        }
+    }
+
+    void mathsTest() {
+        int t = pow(2, 3); // 2 ^ 3 = 8
+    }
+
+    void traverseTest() {
+        unordered_map<int, vector<int>> mp;
+        // map traverse 1
+        for (auto& [k, v] : mp) {
+        }
+        // map traverse 2
+        unordered_map<int, vector<int>>::iterator it;
+        for (it = mp.begin(); it != mp.end(); it++) {
+        }
+
+        set<int> st;
+        // set traverse 1
+        for (int u : st) {
+            cout << u << endl;
+        }
+        // set traverse 2
+        set<int>::iterator its;
+        for (its = st.begin(); its != st.end(); its++) {
+        }
+
+        // map contains
+        // 1
+        if (mp.find(1) != mp.end()) {
+        }
+        // 2
+        if (mp.count(1)) {
+        }
+
+        // set contains
+        // 1
+        if (st.find(1) != st.end()) {
+        }
+        // 2
+        if (st.count(1)) {
         }
     }
 };

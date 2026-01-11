@@ -11,6 +11,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 using namespace std;
@@ -24,6 +25,113 @@ public:
         T c = a;
         a = b;
         b = c;
+    }
+
+    int findSmallestInteger(vector<int>& nums, int value) {
+        // [1,-10,7,13,6,8]
+        // ->
+        // [1,0,2,3,1,3]
+        // [0,1,1,2,3,3]
+        int n = nums.size();
+        for (int i = 0; i < n; i++) {
+            int t = nums[i];
+            while (t < 0) {
+                t += value;
+            }
+            nums[i] = t % value;
+        }
+        map<int, int> mp;
+        for (int u : nums) {
+            mp[u]++;
+        }
+        int res = 0;
+        while (mp.count(res % value) && mp[res % value]) {
+            mp[res % value]--;
+            res++;
+        }
+        return res;
+    }
+
+    // Tiktok written test
+    // Given the photos that track the path of a trip, return the whole trip route from beginning to the end
+    // e.g.
+    // photos = [[1,4], [1,5], [2,4], [3,5]]
+    // 1 -> 4,5
+    // 2 -> 4
+    // 3 -> 5
+    // 4 -> 2,1
+    // 5 -> 1,3
+    // -> [2,4,1,5,3] or [3,5,1,4,2]
+    vector<int> findTravelPath(vector<vector<int>> photos) {
+        unordered_map<int, vector<int>> mp;
+        for (vector<int> p : photos) {
+            int a = p[0];
+            int b = p[1];
+            if (mp.count(a)) {
+                vector<int>& v = mp[a];
+                v.push_back(b);
+            } else {
+                vector<int> v{b};
+                mp[a] = v;
+            }
+            if (mp.count(b)) {
+                vector<int>& v = mp[b];
+                v.push_back(a);
+            } else {
+                vector<int> v{a};
+                mp[b] = v;
+            }
+        }
+        int cur = -1;
+        for (auto& [k, v] : mp) {
+            if (v.size() == 1) {
+                cur = k;
+                break;
+            }
+        }
+        vector<int> res;
+        set<int> visited;
+        visited.insert(cur);
+        res.push_back(cur);
+        while (true) {
+            vector<int>& v = mp[cur];
+            for (int u : v) {
+                if (!visited.count(u)) {
+                    cur = u;
+                }
+            }
+            visited.insert(cur);
+            res.push_back(cur);
+            if (res.size() == mp.size()) {
+                break;
+            }
+        }
+        return res;
+    }
+
+    // 3202. Find the Maximum Length of Valid Subsequence II
+    // find the maximum length of subsequence of nums that remainder over k
+    // (sub[0] + sub[1]) % k == (sub[1] + sub[2]) % k == ... == (sub[n - 2] + sub[n - 1]) % k
+    // dynamic processing
+    // nums = [1,2,3,4,5], k = 2
+    // -> 5, [1,2,3,4,5]
+    // nums = [1,4,2,3,1,4], k = 3
+    // -> 4, [1,4,1,4]
+    int maximumLength(vector<int>& nums, int k) {
+        int res = 0;
+        int n = nums.size();
+        for (int j = 0; j < k; j++) {
+            // for each possible value of u % k = j
+            vector<int> dp(k, 0); // dp[i] is the max length of subsequence that (sub[n - 2] + sub[n - 1]) % k == j
+            for (int i = 0; i < n; i++) {
+                int mod = nums[i] % k;
+                dp[mod] = dp[(j - mod + k) % k] + 1;
+            }
+            for (int u : dp) {
+                res = max(res, u);
+            }
+        }
+        return res;
     }
 
     // TT Hackerrank 2
