@@ -15,6 +15,33 @@
 
 class dpLCS {
 public:
+    // 1143. Longest Common Subsequence
+    // return the length of longest common subsequence of two given strings
+    // e.g.
+    // s1 = "abcde", s2 = "ace"
+    // -> 3
+    // s1 = "abc", s2 = "abc"
+    // -> 3
+    // s1 = "abc", s2 = "def"
+    // -> 0
+    int longestCommonSubsequence(string s1, string s2) {
+        int m = s1.size() + 1;
+        int n = s2.size() + 1;
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                    dp[i][j] = max(dp[i][j], dp[i - 1][j - 1] + 1);
+                } else {
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+
     // 712. Minimum ASCII Delete Sum for Two Strings
     // Given two strings s1 and s2, return the lowest ASCII sum of deleted characters to make two strings equal.
     // e.g.
@@ -24,18 +51,17 @@ public:
         int n1 = s1.size();
         int n2 = s2.size();
         // dp[i][j] is the max sum we can get from substr s1[0,i] and s2[0,j]
-        vector<vector<int>> dp(n1+1, vector<int>(n2+1, 0));
+        vector<vector<int>> dp(n1 + 1, vector<int>(n2 + 1, 0));
         int sum = 0;
-        for(char c : s1) sum += c;
-        for(char c : s2) sum += c;
-        for(int i = 1;i<=n1;i++) {
-            for(int j = 1;j <= n2;j++) {
-                if(s1[i-1] == s2[j-1]) {
-                    dp[i][j] = max(dp[i-1][j-1] + s1[i-1], dp[i][j-1]);
+        for (char c : s1) sum += c;
+        for (char c : s2) sum += c;
+        for (int i = 1; i <= n1; i++) {
+            for (int j = 1; j <= n2; j++) {
+                if (s1[i - 1] == s2[j - 1]) {
+                    dp[i][j] = max(dp[i - 1][j - 1] + s1[i - 1], dp[i][j - 1]);
                 } else {
-                    dp[i][j] = max(dp[i-1][j], dp[i][j-1]);
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]);
                 }
-
             }
         }
         return sum - 2 * dp[n1][n2];

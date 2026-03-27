@@ -35,13 +35,18 @@ int main() {
     learning.charTest();
     learning.mathsTest();
     learning.traverseTest();
+    learning.maxIntTest();
 
     Solution solution;
 
-    ListNode* node3 = new ListNode(3, nullptr);
-    ListNode* node2 = new ListNode(6, node3);
-    ListNode* node1 = new ListNode(2, node2);
-    ListNode* node0 = new ListNode(5, node1);
+    ListNode* node7 = new ListNode(7, nullptr);
+    ListNode* node6 = new ListNode(6, node7);
+    ListNode* node5 = new ListNode(5, node6);
+    ListNode* node4 = new ListNode(4, node5);
+    ListNode* node3 = new ListNode(3, node4);
+    ListNode* node2 = new ListNode(2, node3);
+    ListNode* node1 = new ListNode(1, node2);
+    ListNode* node0 = new ListNode(0, node1);
 
     /*
      * 1
@@ -62,10 +67,9 @@ int main() {
     TreeNode* tn1 = new TreeNode(1, tn3, tn4);
 
     vector<vector<int>> matrix = {
-        {1, 2},
-        {2,3},
-        {3,4},
-        {1, 2},
+        {-1, -2, -3},
+        {-2, -3, -3},
+        {-3, -3, 2},
     };
 
     vector<vector<char>> charMatrix = {
@@ -76,8 +80,8 @@ int main() {
 
     vector<string> start = {"ant", "act", "tack"};
     vector<string> target = {"tack", "act", "acti"};
-    vector<int> vec = {0, -3};
-    vector<int> vec1 = {1,3,3,2};
+    vector<int> vec = {4,8,5,3};
+    vector<int> vec1 = {1,5,2,7};
     string s = "mokkori";
 
 
@@ -91,11 +95,7 @@ int main() {
     int j = 9;
     j += i++;
 
-    // solution.maxEvents();
-    // solution.removeInvalidParentheses("(a)())()");
-    // solution.convert("PAYPALISHIRING", 4);
-    // solution.countSubarrays(vec, 5);
-    // int t = solution.maximumGain("cdbcbbaaabab", 4, 5);
-    solution.findSmallestInteger(vec, 4);
+    solution.maxProductPath(matrix);
+    // solution.maxCapacity(vec, vec1, 8);
     return 0;
 }

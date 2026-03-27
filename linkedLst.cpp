@@ -27,7 +27,6 @@ struct ListNode {
 
 class LinkedLst {
 public:
-
     // 160. Intersection of Two Linked Lists
     // first match each lists length, then start from the beginning of the equal length to find intersection
     ListNode* getIntersectionNode(ListNode* headA, ListNode* headB) {
@@ -59,75 +58,46 @@ public:
     }
 
     /*
-     * 2074. 反转偶数长度组的节点
-     * 将链表从头开始，以 1，2，3，4 ... 个节点来分组，反转偶数长度组的节点
-     *
      * 2074. Reverse Nodes in Even Length Groups
-     * Start the linked list from the beginning and group them into 1, 2, 3, 4... nodes, and reverse the nodes in the even-length groups.
+     * Start the linked list from the beginning and group them into 1, 2, 3, 4... nodes
+     * reverse the nodes in the even-length groups.
+     *
+     * e.g.
+     * h = 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
+     * ->  1 -> 3 -> 2 -> 4 -> 5 -> 6 -> 8 -> 7
      */
-    ListNode* reverseEvenLengthGroups(ListNode* head) {
-        vector<int> vec;
-        while (head) {
-            vec.push_back(head->val);
-            head = head->next;
-        }
-        int n = vec.size();
-        int curLen = 1;
-        for (int i = 0; i < n;) {
-            int nextLen = 0;
-            while (nextLen < curLen && i + nextLen < n) {
-                nextLen++;
+    ListNode* reverseEvenLengthGroups(ListNode* h) {
+        vector<ListNode *> vec;
+        ListNode* ans = h;  // the return value
+        ListNode* last = h;  // last node of previous vector
+        int cur = 1, groupId = 1;  // cur is current number of nodes to be added in this round, groupId is the total number of nodes should be added
+        while (h != nullptr) {
+            if (cur == 0) {
+                if (vec.size() % 2 == 0) {
+                    reverse(vec.begin(), vec.end());
+                }
+                for (auto& ln : vec) {
+                    last->next = ln;
+                    last = last->next;
+                }
+                last->next = h;
+
+                vec.clear();
+                groupId++;
+                cur = groupId;
             }
-            if (!(nextLen & 1)) {
-                reverse(&vec, i, i + nextLen); // 反转[i, i + nextLen)
-            }
-            i += curLen;
-            curLen++;
+            vec.push_back(h);
+            h = h->next;
+            cur--;
         }
-        // rebuild
-        ListNode* ans = new ListNode(vec[0], nullptr);
-        ListNode* curNode = ans;
-        for (int i = 1; i < n; i++) {
-            curNode->next = new ListNode(vec[i], nullptr);
-            curNode = curNode->next;
+        if (vec.size() % 2 == 0) {
+            reverse(vec.begin(), vec.end());
         }
+        for (auto& ln : vec) {
+            last->next = ln;
+            last = ln;
+        }
+        last->next = nullptr;
         return ans;
-    }
-
-    // [l, r)
-    void reverse(vector<int>* vec, int l, int r) {
-        // 反转 l, r
-        std::reverse(vec->begin() + l, vec->begin() + r);
-    }
-
-    // 原地反转版本
-    ListNode* reverseEvenLengthGroups0(ListNode* head) {
-        int i = 0;
-        ListNode* cur = head;
-        ListNode* pre = nullptr;
-        while (cur) {
-            ++i;
-            ListNode* it = cur;
-            int len = 0;
-            for (; len < i && it; ++len) {
-                it = it->next;
-            }
-
-            if (len & 1) {
-                // 奇数组，不用反转
-                for (int j = 1; j <= len; ++j) {
-                    tie(pre, cur) = tuple<ListNode *, ListNode *>{cur, cur->next};
-                }
-            } else {
-                for (int j = 1; j < len; ++j) {
-                    // 绝了 amazing
-                    // pre.next, cur.next.next, cur.next = cur.next, pre.next, cur.next.next
-                    tie(pre->next, cur->next, cur->next->next) =
-                            tuple<ListNode *, ListNode *, ListNode *>{cur->next, cur->next->next, pre->next};
-                }
-                tie(pre, cur) = tuple<ListNode *, ListNode *>{cur, cur->next};
-            }
-        }
-        return head;
     }
 };

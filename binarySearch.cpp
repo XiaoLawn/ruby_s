@@ -11,15 +11,15 @@ using namespace std;
 
 class BinarySearch {
 public:
-    // lower_bound return the first vec >= u
+    // lower_bound return the index of first item >= u
     int lower_bound(vector<int> vec, int u) {
-        int l = 0, r = vec.size();  // * r = vec.size()
-        while (l < r) {  // * l < r
-            int mid = l + r >> 1;
-            if (vec[mid] >= u) {  // * vec[mid] >= u, if descending sequence vec <= u
-                r = mid;
+        int l = 0, r = vec.size();  // r = vec.size()
+        while (l < r) {  // l < r
+            int m = (l + r) / 2;
+            if (vec[m] >= u) {  // vec[m] >= u, if descending sequence vec <= u
+                r = m;
             } else {
-                l = mid + 1; // * l = mid + 1, l = mid might go into an infinite loop
+                l = m + 1; // l = m + 1, l = m might go into an infinite loop
             }
         }
         return l;
@@ -28,25 +28,16 @@ public:
     // upper_bound return the first num > t
 
     /*
-     * 2187. 完成旅途的最少时间
-     * 给出每个车完成一趟 所需要的时间 数组 time[]，和总共需要跑的趟数 totalTrips
-     * 求总共需要多少时间完成
+     * 2187. Minimum Time to Complete Trips
+     * time[i] denotes the time taken by the ith bus to complete one trip.
+     * Each bus can make multiple trips one after another, and buses don't effect each other.
+     * return the minimum time to complete total number of trips.
+     *
      * e.g.
      * time = [1,2,3], totalTrips = 5
-     * -> 3
+     * -> 3, 1th bus 3 trips, 2nd 1 trip, 3rd 1 trip, total 5 trips
      *
-     * 二分
      */
-    bool isCool(vector<int>& time, long long totalTime, int totalTrips) {
-        int n = time.size();
-        for (int i = 0; i < n; i++) {
-            int t = totalTime / time[i];
-            totalTrips -= t;
-            if (totalTrips <= 0) return true;
-        }
-        return false;
-    }
-
     long long minimumTime(vector<int>& time, int totalTrips) {
         int n = time.size();
         long long r = LONG_LONG_MAX; // 取 long long 的最大值
@@ -58,13 +49,23 @@ public:
         long long l = 1;
         while (l < r) {
             long long m = (l + r) >> 1;
-            if (isCool(time, m, totalTrips)) {
+            if (isGood(time, m, totalTrips)) {
                 r = m;
             } else {
                 l = m + 1;
             }
         }
         return l;
+    }
+
+    bool isGood(vector<int>& time, long long totalTime, int totalTrips) {
+        int n = time.size();
+        for (int i = 0; i < n; i++) {
+            int t = totalTime / time[i];
+            totalTrips -= t;
+            if (totalTrips <= 0) return true;
+        }
+        return false;
     }
 
     // 2071. 你可以安排的最多任务数目

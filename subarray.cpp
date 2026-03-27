@@ -17,52 +17,152 @@ using namespace std;
 
 class subarray {
 public:
-    // A subarray is a contiguous sequence of elements within an array.
-    // nums = [1,2,3,4,5,6,7,8]
-    // -> [1,2,3], [3,4,5], [4,5,6,7], [7,8]
-    //
-    // A subsequence is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.
-    // nums = [1,2,3,4,5,6,7,8]
-    // -> [1,3,4], [2,3,7], [5,6,7], [7,8]
-    //
-    // A subset is a set which is subset of the original one (order doesn't matter)
-    // nums = [1,2,3,4,5,6,7,8]
-    // -> [], [3], [6,2], [5,7,2,3,1]
+    /*
+     *
+     * A subarray is a contiguous sequence of elements within an array.
+     * nums = [1,2,3,4,5,6,7,8]
+     * -> [1,2,3], [3,4,5], [4,5,6,7], [7,8]
+     *
+     * A subsequence is an array that can be derived from another array by deleting some or no elements without changing the order of the remaining elements.
+     * nums = [1,2,3,4,5,6,7,8]
+     * -> [1,3,4], [2,3,7], [5,6,7], [7,8]
+     *
+     * A subset is a set which is subset of the original one (order doesn't matter)
+     * nums = [1,2,3,4,5,6,7,8]
+     * -> [], [3], [6,2], [5,7,2,3,1]
+     */
 
+    /*
+     * subarray -> sliding windows
+     * subset -> dfs
+     */
+
+    // 2444. Count Subarrays With Fixed Bounds
+    // return the number of subarrays which min equals to minK and max equals to maxK
+    // e.g.
+    // nums = [1,3,5,2,7,5], minK = 1, maxK = 5
+    // -> 2, [1,3,5], [1,3,5,2]
+    //
+    // nums = [1,1,1,1], minK = 1, maxK = 1
+    // -> 10
+    long long countSubarrays(vector<int>& nums, int minK, int maxK) {
+        long long ans = 0;
+        int minIdx = -1, maxIdx = -1, badIdx = -1;
+        int n = nums.size();
+        for (int i = 0; i < n; i++) {
+            if (nums[i] < minK || nums[i] > maxK) {
+                badIdx = i;
+            }
+            if (nums[i] == minK) {
+                minIdx = i;
+            }
+            if (nums[i] == maxK) {
+                maxIdx = i;
+            }
+            ans += max(0, min(minIdx, maxIdx) - badIdx);
+        }
+        return ans;
+    }
+
+    // TT Hackerrank 2
+    // return the number of subarray that contains exact k distinct elements
+    // e.g.
+    // k = 2, nums = [2,3,3,2,1,2,2]
+    // [2,3]
+    // [2,3,3]
+    // [2,3,3,2]
+    // [3,3,2]
+    // [3,2]
+    // [2,1]
+    // [2,1,2]
+    // [1,2]
+    // [1,2,2]
+    // -> 10
+    int countDistinct(vector<int> nums, int k) {
+        return atMostKDistinct(nums, k) - atMostKDistinct(nums, k - 1);
+    }
+
+    // It's east to calculate how many subarray are there contains "at most" k distinct elements
+    // k = 2, nums = [2,3,3,2,1,2,2]
+    /*
+     * 2
+     * 2,3
+     * 3
+     * 2,3,3
+     * 3,3
+     * 3
+     * 2,3,3,2
+     * 3,3,2
+     * 3,2
+     * 2
+     * 2,1
+     * 1
+     * 2,1,2
+     * 1,2
+     * 2
+     * 2,1,2,2
+     * 1,2,2
+     * 2,2
+     * 2
+     * -> 19
+     */
+    int atMostKDistinct(vector<int>& nums, int k) {
+        int l = 0, ans = 0;
+        unordered_map<int, int> mp;
+        for (int r = 0; r < nums.size(); r++) {
+            mp[nums[r]]++;
+
+            if (mp[nums[r]] == 1) { // if it's the only one
+                k--; // k is how many left
+            }
+
+            while (k < 0) {
+                mp[nums[l]]--;
+                if (mp[nums[l]] == 0) {
+                    k++;
+                }
+                l++;
+            }
+
+            // to now, there are at most k elements in subarray
+            ans += r - l + 1;
+        }
+        return ans;
+    }
 
     // 1695. Maximum Erasure Value
     // return the maximum sum of a subarray in which each element is unique
     // sliding window
     // nums = [4,2,4,5,6]
-    // -> 17, [4,5,6]
+    // -> 17, [2,4,5,6]
     // nums = [5,2,1,2,5,2,1,2,5]
     // -> 8, [5,2,1] or [1,2,5]
     int maximumUniqueSubarray(vector<int>& nums) {
         unordered_map<int, int> mp;
-        int n = nums.size(), cur = 0, sum = 0, res = 0, left = 0, right = 0;
-        while (right < n) {
+        int n = nums.size(), cur = 0, sum = 0, ans = 0, l = 0, r = 0;
+        while (r < n) {
             // initialize
-            cur = nums[right];
+            cur = nums[r];
             mp[cur]++;
             // while illegal
-            while (mp[cur] > 1 && left <= right) {
-                mp[nums[left]]--;
-                sum -= nums[left];
-                left++;
+            while (mp[cur] > 1 && l <= r) {
+                mp[nums[l]]--;
+                sum -= nums[l];
+                l++;
             }
             // legal state
             sum += cur;
-            res = max(res, sum);
-            right++;
+            ans = max(ans, sum);
+            r++;
         }
-        return res;
+        return ans;
     }
 
     // 2537. Count the Number of Good Subarrays
     // A subarray is good if there are at least k pairs of indices (i, j) such that i < j and arr[i] == arr[j]
     // sliding window
     //
-    // nums = [3,1,4,3,2,2,5,4], k = 2
+    // nums = [3,1,4,3,2,2,4], k = 2
     // -> 4
     // - [3,1,4,3,2,2] that has 2 pairs.
     // - [3,1,4,3,2,2,4] that has 3 pairs.
@@ -76,25 +176,30 @@ public:
     // [3,3,3,3] 0+1+2+3 pairs
     long long countGood(vector<int>& nums, int k) {
         unordered_map<int, int> mp; // mp[u] is the number of times u appears in the window
-        long long res = 0;
+        long long ans = 0;
         int n = nums.size();
-        int left = 0, right = 0, cnt = 0;
-        while (right < n) {
-            cnt += mp[nums[right]];
-            mp[nums[right]]++;
+        int l = 0, r = 0, cnt = 0;
+        while (r < n) {
+            // such a smart way of counting pairs.
+            // [2,2] -> 1
+            // [2,2,2] -> 2+1 = 3
+            // [2,2,2,2] -> 3+2+1 = 6
+            // ...
+            cnt += mp[nums[r]];
+            mp[nums[r]]++;
             // while legal
             while (cnt >= k) {
-                mp[nums[left]]--;
-                cnt -= mp[nums[left]];
-                left++;
+                mp[nums[l]]--;
+                cnt -= mp[nums[l]];
+                l++;
             }
             // reached the first illegal state, but from this illegal state we can find out something
             // at this time, [left, right] isn't qualified,
             // but [0, right], [1, right], ... [left - 1, right] are all qualified
-            res += left;
-            right++;
+            ans += l;  // it's better to go your ans with l, if you go with r it's gonna be tricky
+            r++;
         }
-        return res;
+        return ans;
     }
 
     // 2302. Count Subarrays With Score Less Than K
@@ -108,21 +213,21 @@ public:
     long long countSubarrays(vector<int>& nums, long long k) {
         int n = nums.size();
         long long ans = 0;
-        int left = 0;
+        int l = 0;
         long long sum = 0;
         // right side moving forward, if illegal, left side move forward until reaching right
-        for (int right = 0; right < n; right++) {
+        for (int r = 0; r < n; r++) {
             // right move forward
-            sum += nums[right];
-            while (sum * (right - left + 1) >= k) {
+            sum += nums[r];
+            while (sum * (r - l + 1) >= k) {
                 // if illegal
-                sum -= nums[left];
-                left++; // left move forward
+                sum -= nums[l];
+                l++; // left move forward
             }
             // reach legal state
             // all subarray that ends with right are good ones
             // [left, right], [left + 1, right], ... , [right - 1, right], [right, right]
-            ans += right - left + 1;
+            ans += r - l + 1;
         }
         return ans;
     }

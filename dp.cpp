@@ -16,6 +16,49 @@ public:
      * The future will not affect the things that have happened.
      */
 
+    // 1594. Maximum Non Negative Product in a Matrix
+    // return the maximum non negative product of the path, from the top left of the grid to bottom right
+    // e.g.
+    // grid =
+    // -1, 2, 1
+    // 1, -2, 1
+    // 3, -4, 1
+    // -> 8
+    // path is
+    // 1 -> 1 -> -2 -> -4 -> 1
+    // 1 * 1 * -2 * -4 * 1 = 8
+    int maxProductPath(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<long long>> dpMin(m, vector<long long>(n, 0));
+        vector<vector<long long>> dpMax(m, vector<long long>(n, 0));
+        dpMin[0][0] = grid[0][0];
+        dpMax[0][0] = grid[0][0];
+        for(int i = 1;i<m;i++) {
+            long long t = grid[i][0] * dpMin[i-1][0];
+            dpMin[i][0] = t;
+            dpMax[i][0] = t;
+        }
+        for(int j = 1;j<n;j++) {
+            long long t = grid[0][j] * dpMin[0][j-1];
+            dpMin[0][j] = t;
+            dpMax[0][j] = t;
+        }
+        for(int i = 1;i<m;i++) {
+            for(int j = 1;j<n;j++) {
+                int cur = grid[i][j];
+                long long a1 = cur * dpMin[i - 1][j];
+                long long a2 = cur * dpMin[i][j - 1];
+                long long a3 = cur * dpMax[i - 1][j];
+                long long a4 = cur * dpMax[i][j - 1];
+                dpMin[i][j] = min(a1, min(a2, min(a3,a4)));
+                dpMax[i][j] = max(a1, max(a2, max(a3,a4)));
+            }
+        }
+        if(dpMax[m - 1][n - 1] < 0) return -1;
+        return (int)(dpMax[m - 1][n - 1] % 1000000007);
+    }
+
     // 120. Triangle
     // Given a triangle array, return the minimum path sum from top to bottom.
     // dp backwards

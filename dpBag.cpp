@@ -40,34 +40,6 @@ public:
      *
      */
 
-    // 2787. Ways to Express an Integer as Sum of Powers
-    // return the total ways to express n using numbers to the power of x, numbers are unique
-    // dpBag - total item picked 'just equal to' specific number, Ask the number of total possible plans
-    // e.g.
-    // n = 10, x = 2
-    // -> 1, 10 = 1^2 + 3^2
-    //
-    // n = 4, x = 1
-    // -> 2,
-    // -> 4 = 1^1 + 3^1
-    // -> 4 = 4^1
-    int numberOfWays(int n, int x) {
-        vector<int> nums;
-        for (int i = 1; pow(i, x) <= n; i++) {
-            nums.push_back(pow(i, x));
-        }
-
-        vector<int> dp(n + 1, 0);
-        dp[0] = 1;
-        for (int u : nums) {
-            for (int i = n; i >= u; i--) {
-                dp[i] = (dp[i] + dp[i - u]) % MOD;
-                // not dp[i] = max(dp[i], dp[i - u] + 1)
-            }
-        }
-        return dp[n];
-    }
-
     // 416. Partition Equal Subset Sum
     // return true if there exists a subset that sums to half of the total sum
     // dpBag - total item picked 'just equal to' specific number, Ask the number of total possible plans
@@ -84,8 +56,8 @@ public:
         vector<bool> f(sum + 1); // f[i] = true means there are subset that sums i
         f[0] = true;
         for (int u : nums) {
-            for (int i = sum; i >= 0; i--) {
-                // dp from end to front
+            for (int i = sum; i >= u; i--) {
+                // dp from end to front, because it's 01 knapsack stuffs aren't allowed to reuse
                 f[i] = f[i] || f[i - u];
                 if (f[sum]) {
                     return true;
@@ -95,31 +67,31 @@ public:
         return f[sum];
     }
 
-    // dp from front to end version(not recommended)
-    bool canPartition1(vector<int>& nums) {
-        int sum2 = accumulate(nums.begin(), nums.end(), 0);
-        if (sum2 % 2 == 1) return false;
-        int sum = sum2 / 2;
-        vector<bool> f(sum + 1); // f[i] = true means there are subset that sums i
-        f[0] = true;
+    // 2787. Ways to Express an Integer as Sum of Powers
+    // return the total ways to express n using numbers to the power of x, numbers are unique
+    // dpBag - total item picked 'just equal to' specific number, Ask the number of total possible plans
+    // e.g.
+    // n = 10, x = 2
+    // -> 1, 10 = 1^2 + 3^2
+    //
+    // n = 4, x = 1
+    // -> 2, 4 = 1^1 + 3^1, 4 = 4^1
+    int numberOfWays(int n, int x) {
+        vector<int> nums;
+        for (int i = 1; pow(i, x) <= n; i++) {
+            nums.push_back(pow(i, x));
+        }
+        // now the question turns into:
+        // return the "total ways" to pick from nums that sum into n, no repeat selection.
+        vector<int> dp(n + 1, 0);
+        dp[0] = 1;
         for (int u : nums) {
-            vector<int> update;
-            // dp from front to end, use vector<int> update to save temporary results
-            for (int i = 0; i < f.size(); i++) {
-                if (f[i]) {
-                    if (i + u == sum) {
-                        return true;
-                    }
-                    update.push_back(i + u);
-                }
-            }
-            for (int ud : update) {
-                if (ud <= f.size()) {
-                    f[ud] = true;
-                }
+            for (int i = n; i >= u; i--) {
+                dp[i] = (dp[i] + dp[i - u]) % (1e9 + 7);
+                // not dp[i] = max(dp[i], dp[i - u] + 1), because we want the "total ways"
             }
         }
-        return f[sum];
+        return dp[n];
     }
 
     /**
@@ -139,7 +111,7 @@ public:
     // amount = 5, coins = [1,2,5]
     // -> 4, [1,1,1,1,1], [1,1,1,2], [1,2,2], [5]
     int change(int amount, vector<int>& coins) {
-        vector<int> f(amount + 1, 0);
+        vector<int> f(amount + 1, 0);  // f[i] means the "total ways" that sums up to amount
         f[0] = 1;
         for (int coin : coins) {
             for (int i = coin; i <= amount; i++) {
@@ -159,7 +131,7 @@ public:
     // n = 13
     // -> 2, 13 = 4 + 9
     int numSquares(int n) {
-        vector<int> dp(n + 1, 0x3f3f3f3f); // dp[i] means the least number of psn that sums to i
+        vector<int> dp(n + 1, 0x3f3f3f3f); // dp[i] means the "least number" of psn that sums to i
         dp[0] = 0;
         for (int i = 0; i <= n; i++) {
             for (int j = 1; j * j <= i; j++) {

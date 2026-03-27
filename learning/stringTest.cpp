@@ -9,6 +9,12 @@ void stringTest() {
     char c; // \0
     char ca;
     char cb;
+    if (isalpha(c)) {
+        // ...
+    }
+    if (isdigit(c)) {
+        // ...
+    }
 
     string s = "abc";
     string s1 = "hello";
@@ -41,14 +47,18 @@ void stringTest() {
     int n2 = s.find("lef"); // -1 means not found
 
     string vowelList = "aeiouAEIOU";
-    if (vowelList.find('d') != -1) {
+    if (vowelList.find('e') != string::npos) {
+        // ...
+    }
+    if (vowelList.find('d') != -1) {  // bad c++ practice
         // not found
     }
 
 
-    // Take a substring
+    // substring
     // From index 1 and takes a substring of length 2
     string sub = s.substr(1, 2);
+
     // Take a substring [m1, m2)
     int m1 = 3;
     int m2 = 6;

@@ -15,6 +15,63 @@ using namespace std;
 class Simulate {
 public:
 
+    // Tiktok written test
+    // Given the photos that track the path of a trip, return the whole trip route from beginning to the end
+    // e.g.
+    // photos = [[1,4], [1,5], [2,4], [3,5]]
+    // 1 -> 4,5
+    // 2 -> 4
+    // 3 -> 5
+    // 4 -> 2,1
+    // 5 -> 1,3
+    // -> [2,4,1,5,3] or [3,5,1,4,2]
+    vector<int> findTravelPath(vector<vector<int>> photos) {
+        unordered_map<int, vector<int>> mp;
+        for (vector<int> p : photos) {
+            int a = p[0];
+            int b = p[1];
+            if (mp.count(a)) {
+                vector<int>& v = mp[a];
+                v.push_back(b);
+            } else {
+                vector<int> v{b};
+                mp[a] = v;
+            }
+            if (mp.count(b)) {
+                vector<int>& v = mp[b];
+                v.push_back(a);
+            } else {
+                vector<int> v{a};
+                mp[b] = v;
+            }
+        }
+        int cur = -1;
+        for (auto& [k, v] : mp) {
+            if (v.size() == 1) {
+                cur = k;
+                break;
+            }
+        }
+        vector<int> res;
+        unordered_set<int> visited;
+        visited.insert(cur);
+        res.push_back(cur);
+        while (true) {
+            vector<int>& v = mp[cur];
+            for (int u : v) {
+                if (!visited.count(u)) {
+                    cur = u;
+                }
+            }
+            visited.insert(cur);
+            res.push_back(cur);
+            if (res.size() == mp.size()) {
+                break;
+            }
+        }
+        return res;
+    }
+
     // 1717. Maximum Score From Removing Substrings
     // for each round, each ab gains x points, and ba gains y points, return the maximum points
     // s = "cdbcbbaaabab", x = 4, y = 5

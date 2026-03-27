@@ -21,10 +21,14 @@ public:
 
 
     /*
-     * vector -> push_back(), pop_back(), resize(), clear(),
+     * vector -> push_back(), pop_back(), resize(), clear(), erase(), back(), rbegin(), reverse(begin(), end())
+     *
      * set -> insert(), erase(), if(st.count(1)), if(st.find(1) == st.end())
+     *
      * map -> insert(pair<int, string>()), if(mp.count(1)), if(mp.find(1) == mp.end())
+     *
      * stack -> push(), pop(), top(), empty()
+     *
      * queue -> push(), pop(), front(), back(), empty()
      */
     void vecTest() {
@@ -35,6 +39,38 @@ public:
         vector<int> vec3{3, 4, 5, 6};
         vector<int> vec4 = {3, 4, 5, 6};
         vector<int> vec5(vec1.begin(), vec1.end()); // same as vec1
+
+        // Two-dimensional vector init
+        vector<vector<int>> grid(2, vector<int>(10)); // initialize
+        vector<vector<int>> grid1;
+        grid1.resize(2); // now grid1 has two vector that size() == 0
+
+        vector<int> a = {1, 2, 3, 4};
+        vector<int> b = {5, 6, 7};
+
+        // initialize two dimension vectors
+        grid1 = {a, b};
+        for (auto& x : grid1) {
+            for (auto q : x) {
+                cout << q << endl;
+            }
+        }
+
+        // begin and end
+        int bg = *vec4.begin(); // 3
+        int ed = *vec4.end(); // 0
+        int rb = *vec4.rbegin(); // 6
+
+        // negative index not supported, will come up with random result
+        int t = vec3[-1];
+
+        // copy and reference
+        vector<int> cpVec = vec3;
+        vector<int>& rfVec = vec3; // now rfVec is a reference, an alias
+        cpVec.push_back(4);
+        rfVec.push_back(10);
+        rfVec.push_back(11);
+        rfVec.push_back(12);
 
         // use set to initialize vector
         set<int> st;
@@ -70,7 +106,9 @@ public:
         right.pop_back(); // 弹出数组最后的元素，数组元素 - 1
 
         vector<int> num = {2, 4, 5, 1, 3, 6};
-        int back = num.back();
+        // same thing
+        cout << num.back() << endl;;
+        cout << *num.rbegin() << endl;;
 
 
         vector<int> vk;
@@ -92,7 +130,28 @@ public:
         sort(num.begin(), num.end());
 
         // sort descending
-        sort(num.begin(), num.end(), [](int a, int b) { return a > b; });
+        sort(num.begin(), num.end(), [](const int& a, const int& b) { return a > b; });
+
+        // sort one based on another
+        vector<int> vs1 = {7, 5, 4, 3, 2};
+        vector<int> vs2 = {8, 3, 6, 2, 1};
+
+        vector<int> idx(vs1.size());
+        iota(idx.begin(), idx.end(), 0);
+
+        sort(idx.begin(), idx.end(),
+             [&](int i, int j) {
+                 return vs1[i] < vs1[j];
+             });
+
+        vector<int> new_vs2;
+        new_vs2.reserve(vs2.size());
+
+        for (int i : idx)
+            new_vs2.push_back(vs2[i]);
+
+        vs2 = std::move(new_vs2);
+
 
         // sort Two-dimensional array
         vector<vector<int>> en = {{1, 2}, {4, 1}, {3, 5}, {3, 4}, {3, 7}};
@@ -101,37 +160,18 @@ public:
             return a[1] > b[1]; // a[1] from large to small
         });
 
-        int n = num.size();
-        for (int i = 0; i < n; i++) {
-            cout << num[i] << endl;
-        }
-
-        for (int x : num) {
-            cout << x << endl;
-        }
-
         // sub vector
         vector<int> vec = {0, 1, 2, 3, 4, 5, 6, 7};
         vector<int> subVec(vec.begin() + 2, vec.begin() + 5);
 
-        // vec clear 清空vec
+        // vec erase
+        vec.erase(vec.begin() + 3); // after this vec.size() go from 8 to 7
+
+        // vec clear
         vec.clear();
 
-        // Two-dimensional vector
-        vector<vector<int>> grid(2, vector<int>(10)); // initialize
-        vector<vector<int>> graph;
-        graph.resize(2); // now graph has two vector that size() == 0
-
-        vector<int> a = {1, 2, 3, 4};
-        vector<int> b = {5, 6, 7};
-
-        // 直接构建二维 vector
-        graph = {a, b};
-        for (auto& x : graph) {
-            for (auto q : x) {
-                cout << q << endl;
-            }
-        }
+        // reverse a vector
+        reverse(vec.begin(), vec.end());
     }
 
     // update and maintain the order of vec
@@ -162,6 +202,21 @@ public:
         mp.insert(pair<int, string>(5, "5")); // map is formed by pair<>
         mp[8] = "8";
         mp.erase(8);
+        string t1 = mp[8]; // t1 will be "", and mp.count(8) will be > 0
+
+        cout << mp.rbegin()->first << endl;
+        cout << mp.rbegin()->second << endl;
+
+        for (auto& p : mp) {
+            cout << p.first << endl;
+            cout << p.second << endl;
+        }
+
+        string t = mp[41];
+        map<int, map<int, int>> mpm;
+        auto& tmp = mpm[30]; // tmp is an empty map
+
+        tmp[4] = 5;
 
         // map size
         int mpSize = mp.size();
@@ -202,6 +257,16 @@ public:
         if (!mp.count(1)) {
             cout << "contain that element" << endl;
         }
+        if (mp.find(111) != mp.end()) {
+            cout << "contain 111" << endl; // not contain 111, won't go here
+        }
+        if (mp.count(111)) {
+            // the right way
+            cout << "contain 111" << endl; // not contain 111, won't go here
+        }
+        if (mp.count(111)) {
+            cout << "contain 111" << endl; // won't go here also
+        }
         // the wrong way, bc once access mp[13], it inserts item mp[13] = "" into mp
         if (mp[13] == "") {
             cout << "not contain that element" << endl;
@@ -237,10 +302,6 @@ public:
     }
 
     void setTest() {
-        int arr[5] = {0, 1, 2, 3, 4};
-        set<int> st(arr, arr + 5); // 由数组初始化 set
-        set<int> emptySet; // 定义空 set
-
         // range initialization using iterators
         vector<int> nums = {1, 2, 3, 4, 5};
         vector<int> nums1(nums.begin(), nums.end());
@@ -248,6 +309,8 @@ public:
         set<int> st2(st1.begin(), st1.end());
 
         // insert
+        set<int> st;
+
         st.insert(3);
         st.insert(3);
         st.insert(5);
@@ -296,11 +359,17 @@ public:
         st.clear();
     }
 
+    /*
+     * stack
+     * .push()
+     * .top()
+     * .pop()
+     */
     void stackTest() {
         stack<int> stack;
-        stack.push(1); // .push()
+        stack.push(1);
         if (!stack.empty()) {
-            int top = stack.top(); // .top()
+            int top = stack.top();
             cout << top << endl;
             stack.pop();
         }
@@ -364,6 +433,11 @@ public:
         cout << endl;
     }
 
+    // priority_queue
+    // .empty()
+    // .push()
+    // .pop()
+    // .top()
     void priorityQueueTest() {
         // Descending by default
         // 默认大顶堆；等同于 priority_queue<int, vector<int>, less<int> > a;
@@ -453,12 +527,30 @@ public:
 
     void mathsTest() {
         int t = pow(2, 3); // 2 ^ 3 = 8
+        int u = abs(-3);
+        int a;
+    }
+
+    void maxIntTest() {
+        // max int
+        // int max
+        int maxInt = INT_MAX; // 2,147,483,647
+        long long ll = maxInt + (long long) 2789234234; // you must convert one of int to long long
+        cout << ll << endl;
+
+        // max long long
+        // long long max
+        long long maxLL = LONG_LONG_MAX;
     }
 
     void traverseTest() {
         unordered_map<int, vector<int>> mp;
         // map traverse 1
         for (auto& [k, v] : mp) {
+        }
+        for (auto& u : mp) {
+            int k = u.first;
+            vector<int> v = u.second;
         }
         // map traverse 2
         unordered_map<int, vector<int>>::iterator it;

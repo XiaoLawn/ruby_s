@@ -5,6 +5,7 @@
 #include <set>
 #include <stack>
 #include <queue>
+#include <unordered_set>
 
 using namespace std;
 
@@ -27,8 +28,7 @@ struct TreeNode {
 class DFS {
 public:
     // Back Track
-    // examples:
-    // 78. Subsets
+    // model
     void backTrack(TreeNode* root, vector<int> vec) {
         if (root == nullptr) {
             return;
@@ -41,6 +41,77 @@ public:
 
         vec.pop_back(); // backtrack
     }
+
+    // 78. Subsets
+    // backtrack
+    // return all subsets of the given vector
+    // e.g.
+    // nums = [1,2,3]
+    // -> [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+    // nums = [0]
+    // -> [[],[0]]
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<vector<int>> ans;
+        vector<int> vec;
+        dfs(nums, ans, vec, -1);
+        return ans;
+    }
+
+    void dfs(vector<int>& nums, vector<vector<int>>& ans, vector<int>& vec, int cur) {
+        ans.push_back(vec);
+        int n = nums.size();
+        for(int i = cur + 1;i<n;i++) {
+            vec.push_back(nums[i]);
+            dfs(nums, ans, vec, i);
+            vec.pop_back();
+        }
+    }
+
+    /*
+     * 可信 3
+     * back track + subset
+     *
+     * dfs is often related to subset
+     *
+     * there are 2 * nums teams, each program requires two teams to perform, each team must and only perform once
+     * given a list of programs, you can choose any of them to make sure each team performed once and the cost is minimum, return the minimum cost.
+     * {0,1,250} means this can be performed by team 0 and 1, and the cost will be 250
+     *
+     * e.g.
+     * num：2
+     * program：[{0,1,250},{0,3,10},{1,2,25},{1,3,80},{2,3,90}]
+     * -> 25, perform {0,3,10} and {1,2,25}
+     */
+    int ans3 = 1e9;
+
+    int cooperativePerformance(int num, vector<vector<int>>& program) {
+        unordered_set<int> st;
+        dfs3(program, num, 0, 0, st);
+        return ans3;
+    }
+
+    void dfs3(vector<vector<int>>& program, int num, int cur, int sum, unordered_set<int>& st) {
+        if (sum >= ans3) {
+            // cut branch
+            return;
+        }
+        if (st.size() == 2 * num) {
+            ans3 = max(sum, ans3);
+        }
+        int n = program.size();
+        for (int i = cur + 1; i < n; i++) {
+            if (st.count(program[i][0]) || st.count(program[i][1])) {
+                continue;
+            }
+            st.insert(program[i][0]);
+            st.insert(program[i][1]);
+            sum += program[i][2];
+            dfs3(program, num, i, sum, st);
+            st.erase(program[i][0]);
+            st.erase(program[i][1]);
+        }
+    }
+
 
     /*
      * 2267. 检查是否有合法括号字符串路径
@@ -113,8 +184,7 @@ public:
         return ret;
     }
 
-    // 此处，string 记得使用地址 '&'，否则会严重影响速度导致超时
-    // 尽量用 '&' ，能提速不少
+    // here，string should use reference '&' or it will copy every time and become very slow
     int dfs(int& cur, string& s, vector<vector<int>>& tree, int& ret) {
         // 此处，string 记得使用地址 '&'，否则会严重影响速度导致超时
         int m0 = 0, m1 = 0;
@@ -134,12 +204,23 @@ public:
     }
 
     /*
-     * 687. 最长同值路径
+     * 687. Longest Univalue Path
      *
-     * 二叉树，求最长同值路径，带返回，并非从上到下。
+     * Given the root of a binary tree
+     * return the length of the longest path, where each node in the path has the same value.
+     * This path may or may not pass through the root.
      *
-     * p.s.
-     * a -> b -> c 路径长为 2
+     * e.g.
+     *
+     * 1
+     * |\
+     * 3 4
+     * | |\
+     * 2 4 4
+     *   |  \
+     *   4   7
+     *
+     * -> 3, 4-4-4-4
      */
     int longestUnivaluePath(TreeNode* root) {
         if (root == nullptr) return 0;

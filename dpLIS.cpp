@@ -15,8 +15,8 @@
 class dpLIS {
 public:
     // 300. Longest Increasing Subsequence
-
-    // approach 2. using dynamic processing
+    // nums = [10,9,2,5,3,7,101,18]
+    // -> 4, [2,5,7,18]
     int lengthOfLIS(vector<int>& nums) {
         int n = nums.size();
         vector<int> arr(n);

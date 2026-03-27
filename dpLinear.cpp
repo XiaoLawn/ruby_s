@@ -13,6 +13,31 @@ using namespace std;
 class dpLinear {
 public:
 
+    // 3202. Find the Maximum Length of Valid Subsequence II
+    // find the maximum length of subsequence of nums that remainder over k
+    // (sub[0] + sub[1]) % k == (sub[1] + sub[2]) % k == ... == (sub[n - 2] + sub[n - 1]) % k
+    // dynamic processing
+    // nums = [1,2,3,4,5], k = 2
+    // -> 5, [1,2,3,4,5]
+    // nums = [1,4,2,3,1,4], k = 3
+    // -> 4, [1,4,1,4]
+    int maximumLength(vector<int>& nums, int k) {
+        int ans = 0;
+        int n = nums.size();
+        for (int j = 0; j < k; j++) {
+            // for each possible value j of num % k == j
+            vector<int> dp(k, 0); // dp[i] is the max length of subsequence that (sub[n - 2] + sub[n - 1]) % k == j
+            for (int i = 0; i < n; i++) {
+                int mod = nums[i] % k;
+                dp[mod] = dp[(j - mod + k) % k] + 1;
+            }
+            for (int u : dp) {
+                ans = max(ans, u);
+            }
+        }
+        return ans;
+    }
+
     /*
      * 2266. 统计打字方案数
      *
