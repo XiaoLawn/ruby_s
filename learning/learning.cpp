@@ -23,7 +23,7 @@ public:
     /*
      * vector -> push_back(), pop_back(), resize(), clear(), erase(), back(), rbegin(), reverse(begin(), end())
      *
-     * set -> insert(), erase(), if(st.count(1)), if(st.find(1) == st.end())
+     * set -> insert(), erase(), if(st.count(1)), if(st.find(1) == st.end()), begin(), end(), rbegin(), prev(st.end())
      *
      * map -> insert(pair<int, string>()), if(mp.count(1)), if(mp.find(1) == mp.end())
      *
@@ -309,7 +309,28 @@ public:
         set<int> st2(st1.begin(), st1.end());
 
         // insert
-        set<int> st;
+        set<int> st = {3,4,1,5,6,6};
+
+        // access elements
+        // access first
+        auto it3 = st.begin();  // access first
+        advance(it3, 2);   // move forward 2 positions
+        it3 = next(it3);
+        cout << *it3 << endl;
+
+        // access last
+        auto reverse_it = st.rbegin();  // a reverse_iterator, not support for erase()
+        auto normal_it = prev(st.end());  // a normal it
+
+        // erase
+        // erase by iterator
+        st.erase(normal_it);
+        st.erase(st.begin());
+
+        // erase by value
+        st.erase(1);
+
+
 
         st.insert(3);
         st.insert(3);
@@ -320,8 +341,6 @@ public:
 
         cout << "size:" << st.size() << endl;
         cout << "3 count = " << st.count(3) << endl; // set.count(x) 只能返回0或1；可用来判断元素是否存在过
-
-        st.erase(1); // 删除元素
 
         // set contains
         if (st.count(2)) {

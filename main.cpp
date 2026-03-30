@@ -95,7 +95,6 @@ int main() {
     int j = 9;
     j += i++;
 
-    solution.maxProductPath(matrix);
     // solution.maxCapacity(vec, vec1, 8);
     return 0;
 }
