@@ -18,7 +18,7 @@ using namespace std;
 
 class graph {
 public:
-    /***
+    /**
      * Ways to store a graph
      *
      * Adjacency Matrix
@@ -33,6 +33,184 @@ public:
      * }
      *
      */
+
+    /**
+     *
+     * Topology Traverse
+     * Topology Traverse in a graph with cycle, those cycle will never enter the queue
+     *
+     * BFS
+     * Always maintain a visited vector
+     *
+     */
+
+
+    /**
+     *
+     * Topology Traverse
+     *
+     */
+
+    // 802. Find Eventual Safe States
+    // Given an adjacency list of a directed graph,
+    // terminal nodes are the nodes has no outgoing edges
+    // safe nodes are every possible paths start from that leads to terminal nodes, maybe go through other safe nodes then to terminal node
+    //
+    // Topology Traverse
+    // Reverse Graph
+    //
+    // Why would you build a reverse graph for topology traverse?
+    // Because when visited one node, we got to find "the node which it jumps to" and reduce their inDegree.
+    // "the node which it jumps to" is easier than "the node which jumps to it"
+    //
+    // e.g.
+    // graph = [[1,2],[2,3],[5],[0],[5],[],[]]
+    // -> [2,4,5,6]
+    // graph = [[1,2,3,4],[1,2],[3,4],[0,4],[]]
+    // -> [4]
+    vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
+        int n = graph.size();
+        vector<vector<int>> rGraph(n, vector<int>(0));  // A reverse graph for Topology Traverse
+        vector<int> inDegree(n);
+
+        for (int i = 0; i < n; i++) {
+            vector<int> v = graph[i];
+            for (int u : v) {
+                vector<int>& vr = rGraph[u];
+                vr.push_back(i); // u -> i
+                inDegree[i]++;
+            }
+        }
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            vector<int>& next = rGraph[cur];
+            for (int u : next) {
+                inDegree[u]--;
+                if (inDegree[u] == 0) {
+                    q.push(u);
+                }
+            }
+        }
+        vector<int> ans;
+        for (int i = 0; i < n; i++) {
+            if (inDegree[i] == 0) {
+                ans.push_back(i);
+            }
+        }
+        return ans;
+    }
+
+    // 2050. Parallel Courses III
+    // there are n courses, and some courses need to be done first in order to do the next,
+    // each course costs certain amount of time to complete, you can do multiple courses at same time
+    // return the minimum time you can complete all courses.
+    //
+    // Topology Traverse
+    // Which requires you to access all previous nodes before accessing it
+    //
+    // e.g.
+    // n = 3, relations = [[1,3],[2,3]], time = [3,2,5]
+    // -> 8
+    int minimumTime(int n, vector<vector<int>>& relations, vector<int>& time) {
+        vector<int> in(n); // in-degree of each element
+        vector<vector<int>> adj(n, vector<int>()); // adjacency matrix, adj[1] = [3,4,6] means node 1 points to [3,4,6]
+        for (int i = 0; i < relations.size(); i++) {
+            in[relations[i][1] - 1]++;
+            adj[relations[i][0] - 1].push_back(relations[i][1] - 1);
+        }
+        queue<int> q;
+        for (int i = 0; i < n; i++) {
+            if (in[i] == 0) {
+                q.push(i);
+            }
+        }
+        vector<int> start(n);
+        int ans = 0;
+        while (!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            vector<int> curNext = adj[cur];
+            for (int idx : curNext) {
+                in[idx]--;
+                start[idx] = max(start[idx], start[cur] + time[cur]); // but here
+                if (in[idx] == 0) {
+                    q.push(idx);
+                    // start[idx] = max(start[idx], start[cur] + time[cur]);  // not here
+                    // ans = max(ans, start[idx] + time[idx]);  // not here
+                }
+            }
+            ans = max(ans, start[cur] + time[cur]); // but here
+        }
+        return ans;
+    }
+
+    /***
+     *
+     * BFS
+     *
+     */
+
+
+    // 785. Is Graph Bipartite?
+    // given a "undirected" graph, graph[i] is the nodes which are connected to i, a node never connects to itself.
+    // return if the nodes can be partitioned into two independent sets A and B.
+    // such that every edge in the graph connects a node in set A and a node in set B.
+    //
+    // BFS
+    // BFS in an undirected graph, we gotta use visited.
+    //
+    // e.g.
+    // graph = [[1,2,3],[0,2],[0,1,3],[0,2]]
+    // 0 - 1
+    // | \ |
+    // 3 - 2
+    // -> false
+    //
+    // graph = [[1,3],[0,2],[1,3],[0,2]]
+    // 0 - 1
+    // |   |
+    // 3 - 2
+    // -> true
+    bool isBipartite(vector<vector<int>>& graph) {
+        int n = graph.size();
+        vector<int> status(n, -1);
+        queue<int> q;
+        // use
+        for (int i = 0; i < n; i++) {
+            if (status[i] != -1) continue;
+            q.push(i);
+            status[i] = 0;
+            while (!q.empty()) {  // this loop will process connected graph for i, after this just keep looping.
+                int cur = q.front();
+                q.pop();
+                vector<int>& next = graph[cur];
+                for (int u : next) {
+                    if (status[u] == status[cur]) {
+                        return false;
+                    }
+                    if (status[u] == -1) {
+                        // hasn't processed
+                        status[u] = 1 - status[cur];
+                        q.push(u);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * Unclassified
+     */
+
     // 2101. Detonate the Maximum Bombs
     int maximumDetonation(vector<vector<int>>& bombs) {
         int n = bombs.size();
@@ -123,45 +301,6 @@ public:
                 maxId = -1;
             }
             ans[cur] = maxId;
-        }
-        return ans;
-    }
-
-    // 2050. Parallel Courses III
-    // there are n courses, and some courses need to be done first in order to do the next,
-    // each course costs certain amount of time to complete, you can do multiple courses at same time
-    // return the minimum time you can complete all courses.
-    //
-    // Topology Traverse
-    int minimumTime(int n, vector<vector<int>>& relations, vector<int>& time) {
-        vector<int> in(n); // in-degree of each element
-        vector<vector<int>> adj(n, vector<int>()); // adjacency matrix, adj[1] = [3,4,6] means node 1 points to [3,4,6]
-        for (int i = 0; i < relations.size(); i++) {
-            in[relations[i][1] - 1]++;
-            adj[relations[i][0] - 1].push_back(relations[i][1] - 1);
-        }
-        queue<int> q;
-        for (int i = 0; i < n; i++) {
-            if (in[i] == 0) {
-                q.push(i);
-            }
-        }
-        vector<int> start(n);
-        int ans = 0;
-        while (!q.empty()) {
-            int cur = q.front();
-            q.pop();
-            vector<int> curNext = adj[cur];
-            for (int idx : curNext) {
-                in[idx]--;
-                start[idx] = max(start[idx], start[cur] + time[cur]); // but here
-                if (in[idx] == 0) {
-                    q.push(idx);
-                    // start[idx] = max(start[idx], start[cur] + time[cur]);  // not here
-                    // ans = max(ans, start[idx] + time[idx]);  // not here
-                }
-            }
-            ans = max(ans, start[cur] + time[cur]); // but here
         }
         return ans;
     }

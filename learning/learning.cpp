@@ -18,18 +18,51 @@ public:
     // friend
     // template
     // namespace
-
-
+    
     /*
-     * vector -> push_back(), pop_back(), resize(), clear(), erase(), back(), rbegin(), reverse(begin(), end())
+     * vector
+     * ->
+     * push_back(),
+     * pop_back(),
+     * resize(),
+     * clear(),
+     * erase(begin() + i),
+     * back(),
+     * rbegin(),
+     * reverse(begin(), end())
      *
-     * set -> insert(), erase(), if(st.count(1)), if(st.find(1) == st.end()), begin(), end(), rbegin(), prev(st.end())
+     * set
+     * ->
+     * insert(),
+     * erase(it / value),
+     * if(st.count(1)),
+     * if(st.find(1) == st.end()),
+     * begin(),
+     * end(),
+     * rbegin(),
+     * prev(st.end())
      *
-     * map -> insert(pair<int, string>()), if(mp.count(1)), if(mp.find(1) == mp.end())
+     * map
+     * ->
+     * insert(pair<int, string>()),
+     * if(mp.count(1)),
+     * if(mp.find(1) == mp.end()),
+     * erase(it / value),
+     * clear()
      *
-     * stack -> push(), pop(), top(), empty()
+     * stack
+     * ->
+     * push(),
+     * pop(),
+     * top(),
+     * empty()
      *
-     * queue -> push(), pop(), front(), back(), empty()
+     * queue
+     * -> push(),
+     * pop(),
+     * front(),
+     * back(),
+     * empty()
      */
     void vecTest() {
         // initialize

@@ -42,6 +42,46 @@ public:
         vec.pop_back(); // backtrack
     }
 
+    void backTrack1(vector<int> nums, int k, int index, vector<int> cur) {
+        if (cur.size() == k) {
+            return;
+        }
+        for (int i = index; i < nums.size(); i++) {
+            cur.push_back(i);  // DO IT WITHIN THE LOOP !!!
+            backTrack1(nums, k, i + 1, cur);
+            cur.pop_back();
+        }
+    }
+
+    // 77. Combinations
+    // pick k from [1,2 ... n], return the picked result in any order
+    // e.g.
+    // n = 4, k = 2
+    // -> [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]
+    //
+    // Permutations Ank: pick k from n, "order it in different ways", Ank = n! / (n - k)!
+    // Combinations Cnk: pick k from n, "order doesn't matter", Cnk = n! / (k! * (n - k)!)
+    //
+    vector<vector<int>> ans;
+
+    vector<vector<int>> combine(int n, int k) {
+        vector<int> vec;
+        dfs(n, k, 1, vec);
+        return ans;
+    }
+
+    void dfs(int n, int k, int index, vector<int>& vec) {
+        if (vec.size() == k) {
+            ans.push_back(vec);
+            return;
+        }
+        for (int i = index; i <= n; i++) {
+            vec.push_back(i); // DO IT WITHIN THE LOOP
+            dfs(n, k, i + 1, vec);
+            vec.pop_back();
+        }
+    }
+
     // 78. Subsets
     // backtrack
     // return all subsets of the given vector
@@ -60,7 +100,7 @@ public:
     void dfs(vector<int>& nums, vector<vector<int>>& ans, vector<int>& vec, int cur) {
         ans.push_back(vec);
         int n = nums.size();
-        for(int i = cur + 1;i<n;i++) {
+        for (int i = cur + 1; i < n; i++) {
             vec.push_back(nums[i]);
             dfs(nums, ans, vec, i);
             vec.pop_back();
