@@ -70,7 +70,7 @@ public:
     // -> [4]
     vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
         int n = graph.size();
-        vector<vector<int>> rGraph(n, vector<int>(0));  // A reverse graph for Topology Traverse
+        vector<vector<int>> rGraph(n, vector<int>(0)); // A reverse graph for Topology Traverse
         vector<int> inDegree(n);
 
         for (int i = 0; i < n; i++) {
@@ -187,7 +187,8 @@ public:
             if (status[i] != -1) continue;
             q.push(i);
             status[i] = 0;
-            while (!q.empty()) {  // this loop will process connected graph for i, after this just keep looping.
+            while (!q.empty()) {
+                // this loop will process connected graph for i, after this just keep looping.
                 int cur = q.front();
                 q.pop();
                 vector<int>& next = graph[cur];
@@ -206,6 +207,64 @@ public:
         return true;
     }
 
+    /**
+     * Friends-of-friends counting
+     */
+
+    // citadel interview question 2
+    // user with the most common friends is the recommended friend, if there are more than one, pick the one with the smallest id
+    // given n users, and their friendships, find out each person's recommended friend
+    //
+    // Friends-of-friends counting
+    //
+    // e.g.
+    // n = 5, friendships = [[0,1],[1,2],[1,3],[2,3],[3,4]]
+    // 0 -> [1]
+    // 1 -> [0,2,3]
+    // 2 -> [1,3]
+    // 3 -> [1,2,4]
+    // 4 -> [3]
+    //
+    // -> [2,4,0,0,1]
+    //
+    // n = 3, friendships = [[0,1],[1,2],[0,2]]
+    // -> [-1, -1, -1]
+    vector<int> getRecommendedFriends(int n, vector<vector<int>>& friendships) {
+        vector<unordered_set<int>> sets(n); // set[i] is the friend set for ith user
+        for (auto& f : friendships) {
+            int f0 = f[0];
+            int f1 = f[1];
+            sets[f0].insert(f1);
+            sets[f1].insert(f0);
+        }
+        vector<int> ans(n, -1); // ans[i] is the final recommended user for user i
+        // for each user
+        for (int usr = 0; usr < n; ++usr) {
+            unordered_map<int, int> mp; // mp[i] is the common friends number between user cur and i
+            for (int frd : sets[usr]) {
+                // friend of user
+                for (int ffrd : sets[frd]) {
+                    // friend of "friend of user"
+                    if (ffrd == usr || sets[usr].count(ffrd)) {
+                        continue;
+                    }
+                    mp[ffrd]++;
+                }
+            }
+            int maxId = -1; // best match user id
+            int maxNum = 0; // common friend num
+            for (auto& p : mp) {
+                int i = p.first; // ith user
+                int num = p.second; // common friends num
+                if (num > maxNum || (num == maxNum && (maxId == -1 || i < maxId))) {
+                    maxId = i;
+                    maxNum = num;
+                }
+            }
+            ans[usr] = maxId;
+        }
+        return ans;
+    }
 
     /**
      * Unclassified
@@ -249,59 +308,5 @@ public:
         long x12 = pow(x1 - x2, 2);
         long y12 = pow(y1 - y2, 2);
         return x12 + y12 <= r1 * r1;
-    }
-
-    // citadel interview question 2
-    // user with the most common friends is the recommended friend, if there are more than one, pick the one with the smallest id
-    // given n users, and their friendships, find out each person's recommended friend
-    // e.g.
-    // n = 5, friendships = [[0,1],[1,2],[1,3],[2,3],[3,4]]
-    // -> [3, 2, 1, 0, 1]
-    // n = 3, friendships = [[0,1],[1,2],[0,2]]
-    // -> [-1, -1, -1]
-    vector<int> getRecommendedFriends(int n, vector<vector<int>>& friendships) {
-        vector<set<int>> sets(n); // set[i] is the friend set for ith user
-        for (auto& f : friendships) {
-            int m = f[0];
-            int n = f[1];
-            sets[m].insert(n);
-            sets[n].insert(m);
-        }
-
-        vector<int> ans(n, -1); // ans[i] is the final recommended user for user i
-        // for each user
-        for (int cur = 0; cur < n; ++cur) {
-            unordered_map<int, int> mp; // mp[i] is the common friends number between user cur and i
-            for (int frd : sets[cur]) {
-                // friend of cur
-                for (int ffrd : sets[frd]) {
-                    // friend of "friend of cur"
-                    if (ffrd == cur) {
-                        continue;
-                    }
-                    if (sets[cur].count(ffrd)) {
-                        // it's already friend, skip
-                        continue;
-                    }
-                    mp[ffrd]++;
-                }
-            }
-
-            int maxId = -1; // best match user id
-            int maxNum = 0; // common friend num
-            for (auto& p : mp) {
-                int i = p.first; // ith user
-                int num = p.second; // common friends num
-                if (num > maxNum || (num == maxNum && (maxId == -1 || i < maxId))) {
-                    maxId = i;
-                    maxNum = num;
-                }
-            }
-            if (sets[cur].count(maxId)) {
-                maxId = -1;
-            }
-            ans[cur] = maxId;
-        }
-        return ans;
     }
 };
