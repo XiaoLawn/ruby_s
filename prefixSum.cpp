@@ -39,6 +39,59 @@ public:
         }
     }
 
+    // 3070. Count Submatrices with Top-Left Element and Sum Less Than k
+    //
+    // 2D prefix sum
+    //
+    // e.g.
+    // grid = [
+    //  [7,2,9],
+    //  [1,5,0],
+    //  [2,6,6]
+    // ], k = 20
+    // -> 6
+    //
+    // grid = [
+    // [7,6,3],
+    // [6,6,1]
+    // ], k = 18
+    // -> 4
+    int countSubmatrices(vector<vector<int>>& grid, int k) {
+        int m = grid.size(); // i
+        int n = grid[0].size(); // j
+        int ans = 0;
+        vector<vector<int>> preSum(m, vector<int>(n, k + 1));
+        preSum[0][0] = grid[0][0];
+        if (grid[0][0] <= k) ans++;
+        for (int j = 1; j < n; j++) {
+            preSum[0][j] = preSum[0][j - 1] + grid[0][j];
+            if (preSum[0][j] <= k) {
+                ans++;
+            } else {
+                break;
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            preSum[i][0] = preSum[i - 1][0] + grid[i][0];
+            if (preSum[i][0] <= k) {
+                ans++;
+            } else {
+                break;
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                preSum[i][j] = grid[i][j] + preSum[i - 1][j] + preSum[i][j - 1] - preSum[i - 1][j - 1];
+                if (preSum[i][j] <= k) {
+                    ans++;
+                } else {
+                    break;
+                }
+            }
+        }
+        return ans;
+    }
+
     // Fenwick tree
     // Used for prefix sum with constant update
     // Also for counting how many numbers smaller/greater than current number
@@ -46,7 +99,7 @@ public:
         vector<int> BIT;
         int n;
 
-        FenwickTree(int n): n(n), BIT(n + 1, 0) {
+        FenwickTree(int n) : n(n), BIT(n + 1, 0) {
         }
 
         // add x to idx element (0-index)

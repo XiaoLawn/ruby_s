@@ -17,7 +17,7 @@ using namespace std;
 
 class subarray {
 public:
-    /*
+    /**
      *
      * A subarray is a contiguous sequence of elements within an array.
      * nums = [1,2,3,4,5,6,7,8]

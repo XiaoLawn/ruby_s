@@ -17,22 +17,47 @@ using namespace std;
 
 class Bit {
 public:
-       /*
-       * 1863. Sum of All Subset XOR Totals
-       *
-       * e.g.
-       * nums = [5,1,6]
-       * -> 28
-       * The empty subset has an XOR total of 0.
-       * [5] has an XOR total of 5.
-       * [1] has an XOR total of 1.
-       * [6] has an XOR total of 6.
-       * [5,1] has an XOR total of 5 XOR 1 = 4.
-       * [5,6] has an XOR total of 5 XOR 6 = 3.
-       * [1,6] has an XOR total of 1 XOR 6 = 7.
-       * [5,1,6] has an XOR total of 5 XOR 1 XOR 6 = 2.
-       * 0 + 5 + 1 + 6 + 4 + 3 + 7 + 2 = 28
-       */
+    // 1009. Complement of Base 10 Integer
+    // return the integer when you flip every bit in n, 0 to 1, 1 to 0
+    // e.g.
+    // n = 5
+    // -> 2, 5 = '101', 2 = '010'
+    // n = 10
+    // -> 5, 10 = '1010', 5 = '0101'
+    int bitwiseComplement(int n) {
+        vector<int> vec; // 110 -> {0,1,1} -> {1,0,0}
+        if (n == 0) return 1;
+        while (n > 0) {
+            int b = n & 1;
+            b = 1 - b;
+            vec.push_back(b);
+            n >>= 1;
+        }
+        reverse(vec.begin(), vec.end());
+        int ans = 0;
+        for (int i = 0; i < vec.size(); i++) {
+            ans <<= 1;
+            ans += vec[i];
+        }
+        return ans;
+    }
+
+    /*
+    * 1863. Sum of All Subset XOR Totals
+    *
+    * e.g.
+    * nums = [5,1,6]
+    * -> 28
+    * The empty subset has an XOR total of 0.
+    * [5] has an XOR total of 5.
+    * [1] has an XOR total of 1.
+    * [6] has an XOR total of 6.
+    * [5,1] has an XOR total of 5 XOR 1 = 4.
+    * [5,6] has an XOR total of 5 XOR 6 = 3.
+    * [1,6] has an XOR total of 1 XOR 6 = 7.
+    * [5,1,6] has an XOR total of 5 XOR 1 XOR 6 = 2.
+    * 0 + 5 + 1 + 6 + 4 + 3 + 7 + 2 = 28
+    */
     int subsetXORSum(vector<int>& nums) {
         int total = 0;
         for (int num : nums) {

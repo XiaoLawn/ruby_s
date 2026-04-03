@@ -27,6 +27,44 @@ public:
         b = c;
     }
 
+    int countSubmatrices(vector<vector<int>>& grid, int k) {
+        int m = grid.size(); // i
+        int n = grid[0].size(); // j
+        int ans = 0;
+        vector<vector<int>> preSum(m, vector<int>(n, k + 1));
+        preSum[0][0] = grid[0][0];
+        if (grid[0][0] <= k) ans++;
+
+        for (int j = 1; j < n; j++) {
+            preSum[0][j] = preSum[0][j - 1] + grid[0][j];
+            if (preSum[0][j] <= k) {
+                ans++;
+            } else {
+                break;
+            }
+        }
+        for (int i = 1; i < m; i++) {
+            preSum[i][0] = preSum[i - 1][0] + grid[i][0];
+            if (preSum[i][0] <= k) {
+                ans++;
+            } else {
+                break;
+            }
+        }
+
+        for (int i = 1; i < m; i++) {
+            for (int j = 1; j < n; j++) {
+                preSum[i][j] = preSum[i - 1][j] + preSum[i][j - 1] - preSum[i - 1][j - 1];
+                if (preSum[i][j] <= k) {
+                    ans++;
+                } else {
+                    break;
+                }
+            }
+        }
+        return ans;
+    }
+
     // 301. Remove Invalid Parentheses
     // given a string consists of parentheses and letters
     // you can remove invalid parentheses to make the string valid

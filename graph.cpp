@@ -110,7 +110,7 @@ public:
     // 2050. Parallel Courses III
     // there are n courses, and some courses need to be done first in order to do the next,
     // each course costs certain amount of time to complete, you can do multiple courses at same time
-    // return the minimum time you can complete all courses.
+    // return the minimum time you can complete all courses
     //
     // Topology Traverse
     // Which requires you to access all previous nodes before accessing it

@@ -18,8 +18,8 @@ public:
     // friend
     // template
     // namespace
-    
-    /*
+
+    /**
      * vector
      * ->
      * push_back(),
@@ -63,6 +63,13 @@ public:
      * front(),
      * back(),
      * empty()
+     *
+     * priority_queue
+     * -> push(),
+     * pop(),
+     * top(),  // different from queue
+     * empty()
+     *
      */
     void vecTest() {
         // initialize
@@ -159,31 +166,48 @@ public:
         int t2 = num.size(); // t2 = 11 (5 + 6)
 
         // vec sort
-        // sort ascending
+        //
+        // Parameter = variable in the `function definition`
+        // Argument = `Actual value` you pass into the function
+        //
+        // const T& parameter -> can accept 'const T&' and 'T&' argument
+        // T&       parameter -> can only accept 'T&' argument
+        //
+        // when sorting a vector, don't necessarily need to use const, just auto& or T& are fine
         sort(num.begin(), num.end());
 
         // sort descending
-        sort(num.begin(), num.end(), [](const int& a, const int& b) { return a > b; });
+        sort(num.begin(), num.end(), [](int a, int b) { return a > b; }); // when T = int, value is preferred
+        sort(num.begin(), num.end(), [](const auto& a, const auto& b) { return a > b; }); // also fine
 
-        // sort one based on another
+        // sort pair vector
+        vector<pair<int, int>> vecPair({{1, 2}, {4, 3}, {5, 6}, {8, 5}, {7, 1}});
+        sort(vecPair.begin(), vecPair.end(), [](const auto& a, const auto& b) {
+            if (a.first != b.first) {
+                return a.first < b.first;
+            }
+            return a.second > b.second;
+        });
+
+        // sort vs2 based on element ranking in vs1
         vector<int> vs1 = {7, 5, 4, 3, 2};
         vector<int> vs2 = {8, 3, 6, 2, 1};
 
         vector<int> idx(vs1.size());
         iota(idx.begin(), idx.end(), 0);
 
-        sort(idx.begin(), idx.end(),
-             [&](int i, int j) {
-                 return vs1[i] < vs1[j];
-             });
+        // [&] captures all external variables by reference
+        sort(idx.begin(), idx.end(), [&](int i, int j) {
+            return vs1[i] < vs1[j];
+        });
 
         vector<int> new_vs2;
         new_vs2.reserve(vs2.size());
-
-        for (int i : idx)
+        for (int i : idx) {
             new_vs2.push_back(vs2[i]);
-
-        vs2 = std::move(new_vs2);
+        }
+        vs2 = std::move(new_vs2); // move, vs2 takes over new_vs2 internal buffer, better performance
+        // vs2 = new_vs2;  // copy a new_vs2
 
 
         // sort Two-dimensional array
@@ -342,18 +366,18 @@ public:
         set<int> st2(st1.begin(), st1.end());
 
         // insert
-        set<int> st = {3,4,1,5,6,6};
+        set<int> st = {3, 4, 1, 5, 6, 6};
 
         // access elements
         // access first
-        auto it3 = st.begin();  // access first
-        advance(it3, 2);   // move forward 2 positions
+        auto it3 = st.begin(); // access first
+        advance(it3, 2); // move forward 2 positions
         it3 = next(it3);
         cout << *it3 << endl;
 
         // access last
-        auto reverse_it = st.rbegin();  // a reverse_iterator, not support for erase()
-        auto normal_it = prev(st.end());  // a normal it
+        auto reverse_it = st.rbegin(); // a reverse_iterator, not support for erase()
+        auto normal_it = prev(st.end()); // a normal it
 
         // erase
         // erase by iterator
@@ -362,7 +386,6 @@ public:
 
         // erase by value
         st.erase(1);
-
 
 
         st.insert(3);
@@ -491,16 +514,34 @@ public:
     // .pop()
     // .top()
     void priorityQueueTest() {
-        // Descending by default
-        // 默认大顶堆；等同于 priority_queue<int, vector<int>, less<int> > a;
-        priority_queue<int> a; // descending
-        priority_queue<int, vector<int>, greater<int>> c; // ascending, from small to large
+        priority_queue<int> a; // descending by default, max heap
+        priority_queue<int, vector<int>, greater<int>> a1; // ascending, min heap
+        auto cmp1 = [](int a, int b) {
+            // opposite to sort !!
+            return a > b;
+        };
+        priority_queue<int, vector<int>, decltype(cmp1)> a2(cmp1); // same, ascending, min heap
 
-        priority_queue<string> b;
+
+        priority_queue<string> b; // max heap
+        priority_queue<string, vector<string>, greater<string>> b1; // min heap
+        auto cmp2 = [](const string& a, const auto& b) {
+            return a > b;
+        };
+        priority_queue<string, vector<string>, decltype(cmp2)> b2(cmp2); // ascending, min heap
+
+
+        priority_queue<pair<int, int>> c;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> c1;
+        // customize cmp
+        auto cmp3 = [](const pair<int, int>& a, const pair<int, int>& b) {
+            return a.second > b.second; // order by second, ascending
+        };
+        priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp3)> pq(cmp3);
 
         for (int i = 0; i < 5; i++) {
             a.push(i);
-            c.push(i);
+            a1.push(i);
         }
 
         while (!a.empty()) {
@@ -510,9 +551,9 @@ public:
         }
         cout << endl;
 
-        while (!c.empty()) {
-            cout << c.top() << ' ';
-            c.pop();
+        while (!a.empty()) {
+            cout << a.top() << ' ';
+            a.pop();
         }
         cout << endl;
 

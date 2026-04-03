@@ -13,10 +13,12 @@ class BinarySearch {
 public:
     // lower_bound return the index of first item >= u
     int lower_bound(vector<int> vec, int u) {
-        int l = 0, r = vec.size();  // r = vec.size()
-        while (l < r) {  // l < r
+        int l = 0, r = vec.size(); // r = vec.size()
+        while (l < r) {
+            // l < r
             int m = (l + r) / 2;
-            if (vec[m] >= u) {  // vec[m] >= u, if descending sequence vec <= u
+            if (vec[m] >= u) {
+                // vec[m] >= u, if descending sequence vec <= u
                 r = m;
             } else {
                 l = m + 1; // l = m + 1, l = m might go into an infinite loop
@@ -25,7 +27,59 @@ public:
         return l;
     }
 
-    // upper_bound return the first num > t
+    /**
+     * Binary search in solution space
+     */
+
+    // 3296. Minimum Number of Seconds to Make Mountain Height Zero
+    // A mountain with height h, and a group of workers dig simultaneously
+    // worker[i] digs the 1st unit in worker[i] second, then the 2nd unit costs 2*worker[i], third 3*worker[i]...
+    // return the min number of second that can dig the whole mountain
+    //
+    // Binary search in solution space
+    //
+    // e.g.
+    // mountainHeight = 4, workerTimes = [2,1,1]
+    // -> 3,
+    // worker[0] digs 1 in 2,
+    // worker[1] digs 2 in 1 + 2 = 3,
+    // worker[2] digs 1 in 1
+    // max(2,3,1) = 3
+    //
+    // mountainHeight = 10, workerTimes = [3,2,2,4]
+    // -> 12,
+    // worker[0] digs 2 unit in 3 + 6 = 9,
+    // worker[1] digs 3 in 2 + 4 + 6 = 12,
+    // worker[2] digs 3 in 2 + 4 + 6 = 12,
+    // worker[3] digs 2 in 4 + 8 = 12.
+    // max(9,12,12,12) = 12
+    using ll = long long;
+
+    ll minNumberOfSeconds(int h, vector<int>& workers) {
+        ll l = 0, r = 1e16; // or LLONG_MAX
+        while (l < r) {
+            ll m = (l + r) >> 1;
+            if (canDo(h, workers, m)) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return l;
+    }
+
+
+    bool canDo(int h, vector<int>& workers, ll t) {
+        int n = workers.size();
+        ll sum = 0;
+        for (int i = 0; i < n; i++) {
+            // how many h a worker can dig in t time?
+            ll h1 = sqrt(2 * t / workers[i] + 0.25) - 0.5;
+            sum += h1;
+            if (sum >= h) return true;
+        }
+        return false;
+    }
 
     /*
      * 2187. Minimum Time to Complete Trips
@@ -33,22 +87,23 @@ public:
      * Each bus can make multiple trips one after another, and buses don't effect each other.
      * return the minimum time to complete total number of trips.
      *
+     * Binary search in solution space
+     *
      * e.g.
      * time = [1,2,3], totalTrips = 5
      * -> 3, 1th bus 3 trips, 2nd 1 trip, 3rd 1 trip, total 5 trips
      *
      */
-    long long minimumTime(vector<int>& time, int totalTrips) {
+    ll minimumTime(vector<int>& time, int totalTrips) {
         int n = time.size();
-        long long r = LONG_LONG_MAX; // 取 long long 的最大值
+        ll r = LLONG_MAX;
         for (int i = 0; i < n; i++) {
-            long long t = (long long) time[i] * (long long) totalTrips; // 强制转型
-            // 两个单位不一样的数运算，遵循升级原则，可升级
+            ll t = (ll) time[i] * totalTrips;
             r = min(r, t);
         }
-        long long l = 1;
+        ll l = 1;
         while (l < r) {
-            long long m = (l + r) >> 1;
+            ll m = (l + r) >> 1;
             if (isGood(time, m, totalTrips)) {
                 r = m;
             } else {
@@ -58,7 +113,7 @@ public:
         return l;
     }
 
-    bool isGood(vector<int>& time, long long totalTime, int totalTrips) {
+    bool isGood(vector<int>& time, ll totalTime, int totalTrips) {
         int n = time.size();
         for (int i = 0; i < n; i++) {
             int t = totalTime / time[i];

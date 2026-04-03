@@ -17,13 +17,38 @@ using namespace std;
 
 class slidingWindow {
 public:
-
     // 2962. Count Subarrays Where Max Element Appears at Least K Times
     // 2302. Count Subarrays With Score Less Than K
     // 2537. Count the Number of Good Subarrays
     // in subarray.cpp
 
 
+    // 3. Longest Substring Without Repeating Characters
+    // return the length of the longest substring without duplicate characters
+    // e.g.
+    // s = "abcabcbb"
+    // -> 3
+    // s = "pwwkew"
+    // -> 3
+    // s = "bbbbb"
+    // -> 1
+    int lengthOfLongestSubstring(string s) {
+        int n = s.size();
+        unordered_map<int, int> mp;
+        int r = 0, l = 0, ans = 0;
+        while (r < n) {
+            int cur = s[r] - 'a';
+            mp[cur]++;
+            while (mp[cur] > 1 && l < r) {
+                int t = s[l] - 'a';
+                mp[t]--;
+                l++;
+            }
+            ans = max(ans, r - l + 1);
+            r++;
+        }
+        return ans;
+    }
 
     // 3439. Reschedule Meetings for Maximum Free Time I
     // Total event time is [0, eventTime], you can reschedule k meetings, but the order of the meeting should be kept

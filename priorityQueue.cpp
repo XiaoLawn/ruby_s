@@ -22,25 +22,25 @@ public:
     int maxEvents(vector<vector<int>>& events) {
         // sort two-dimension array
         sort(events.begin(), events.end(), [](auto& a, auto& b) { return a[0] < b[0]; });
-        priority_queue<int, vector<int>, greater<int>> q; // priority queue from small to large
+        priority_queue<int, vector<int>, greater<int>> pq; // ascending
         int id = 0, day = 1, res = 0;
-        while (!q.empty() || id < events.size()) {
+        while (!pq.empty() || id < events.size()) {
             while (id < events.size()) {
                 if (events[id][0] <= day) {
-                    q.push(events[id][1]);
+                    pq.push(events[id][1]);
                     id++;
                 } else {
                     break;
                 }
             }
             // pop all lapsed
-            while (!q.empty() && q.top() < day) {
+            while (!pq.empty() && pq.top() < day) {
                 // put !q.empty judgment first to avoid q being empty
-                q.pop();
+                pq.pop();
             }
             // pop one where end >= day
-            if (!q.empty()) {
-                q.pop();
+            if (!pq.empty()) {
+                pq.pop();
                 res++;
             }
             day++;
@@ -49,10 +49,15 @@ public:
     }
 
     // 2233. Maximum Product After K Increments
-    int maximumProduct(vector<int> &nums, int k) {
-        priority_queue<int, vector<int>, greater<int>> pq;  // 最小堆 升序的优先队列
-
-        for (auto i: nums) {
+    // given a vector of positive numbers and k
+    // each time we can pick a number from nums and increase it by 1
+    // return the possible maximum product of nums after k operations
+    // e.g.
+    // nums = [6,3,3,2], k = 2
+    // -> 216, 6*4*3*3 = 216
+    int maximumProduct(vector<int>& nums, int k) {
+        priority_queue<int, vector<int>, greater<int>> pq; // ascending
+        for (auto i : nums) {
             pq.push(i);
         }
         for (int i = 0; i < k; i++) {
@@ -63,7 +68,7 @@ public:
         }
         long ans = 1;
         while (!pq.empty()) {
-            ans = (ans * pq.top()) % 100000007;
+            ans = ans * pq.top() % 100000007; // (a * b) % m = [(a % m) * (b % m)] % m
             pq.pop();
         }
         return ans;
